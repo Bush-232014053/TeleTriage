@@ -33,7 +33,7 @@
     .stepper-item.active .stepper-label { color: #ffffff; font-weight: 700; }
   </style>
 </head>
-<body class="bg-light">
+<body class="bg-light" data-i18n-auto>
 
   <div class="d-flex min-vh-100 overflow-hidden">
 
@@ -97,7 +97,7 @@
               <small class="text-muted" style="font-size: 0.7rem;">Patient</small>
             </div>
           </div>
-          <button class="btn btn-sm text-white rounded-pill px-3" style="background-color: #187D85; font-size: 0.8rem;">EN | বাং</button>
+          <button class="btn btn-sm text-white rounded-pill px-3" style="background-color: #187D85; font-size: 0.8rem;" id="langToggle">EN | বাং</button>
         </div>
       </header>
 
@@ -225,5 +225,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/p.dashboard-controller.js"></script>
+  <script src="js/i18n.js"></script>
 </body>
 </html>

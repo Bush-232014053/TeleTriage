@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Patient Log In — TeleTriage</title>
+  <title data-i18n-title="page.login.title">Patient Log In — TeleTriage</title>
 
   <!-- Bootstrap 5.3.8 & Tailwind -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,7 +14,7 @@
   <!-- External Custom Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-white">
+<body class="bg-white" data-i18n-auto>
 
   <div class="container-fluid p-0 min-vh-100 d-flex flex-column flex-lg-row">
     
@@ -27,7 +27,7 @@
           <i class="bi bi-plus-square-fill fs-2 me-2"></i>
           <span class="fs-3 fw-bold">TeleTriage</span>
         </a>
-        <button class="btn btn-sm text-white rounded-pill px-3 border border-white/40 lang-btn">
+        <button class="btn btn-sm text-white rounded-pill px-3 border border-white/40" id="langToggle">
           EN | বাং
         </button>
       </div>
@@ -44,8 +44,8 @@
     <div class="col-lg-6 d-flex align-items-center justify-content-center p-4 p-md-5 bg-white">
       <div class="w-100 login-form-wrapper">
         
-        <h1 class="display-6 fw-bold brand-teal mb-1">Patient Log In</h1>
-        <p class="text-secondary fw-medium mb-4 fs-5">Welcome back!</p>
+        <h1 class="display-6 fw-bold brand-teal mb-1" data-i18n="login.heading">Patient Log In</h1>
+        <p class="text-secondary fw-medium mb-4 fs-5" data-i18n="login.welcome">Welcome back!</p>
 
         <!-- Alert Box (For showing validation errors) -->
         <div id="alertMsg" class="alert d-none py-2 text-start small mb-3" role="alert"></div>
@@ -53,27 +53,27 @@
         <form id="loginForm">
           <!-- Email Input -->
           <div class="mb-4">
-            <input type="email" id="email" class="form-control form-control-lg rounded-3 input-gray py-3 px-4 fs-6" placeholder="E-mail Address" required>
+            <input type="email" id="email" class="form-control form-control-lg rounded-3 input-gray py-3 px-4 fs-6" data-i18n-placeholder="login.email" placeholder="E-mail Address" required>
           </div>
 
           <!-- Password Input -->
           <div class="mb-2 position-relative">
-            <input type="password" id="password" class="form-control form-control-lg rounded-3 input-gray py-3 px-4 fs-6 pe-5" placeholder="Password" required>
+            <input type="password" id="password" class="form-control form-control-lg rounded-3 input-gray py-3 px-4 fs-6 pe-5" data-i18n-placeholder="login.password" placeholder="Password" required>
             <i class="bi bi-eye position-absolute top-50 end-0 translate-middle-y me-3 text-secondary" id="togglePassword"></i>
           </div>
 
           <!-- Forgot Password Link -->
           <div class="text-end mb-4">
-            <a href="#" class="brand-teal fw-semibold text-decoration-none small">Forgot password?</a>
+            <a href="#" class="brand-teal fw-semibold text-decoration-none small" data-i18n="login.forgot">Forgot password?</a>
           </div>
 
           <!-- Log In Button -->
-          <button type="submit" class="btn btn-teal w-100 py-3 rounded-pill fw-bold fs-5 shadow-sm mb-4">
+          <button type="submit" class="btn btn-teal w-100 py-3 rounded-pill fw-bold fs-5 shadow-sm mb-4" data-i18n="login.submit">
             Log In
           </button>
 
           <!-- Register Link -->
-          <div class="text-center">
+          <div class="text-center" data-i18n="login.registerPrompt" data-i18n-html>
             <span class="text-secondary small">New to TeleTriage? </span>
             <a href="register.html" class="brand-teal fw-bold text-decoration-none small">Create an account</a>
           </div>
@@ -85,6 +85,7 @@
   </div>
 
   <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/TeleAuth.js"></script>
   <script src="js/auth.js"></script>
 </body>

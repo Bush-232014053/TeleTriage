@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TeleTriage — Telemedicine Triage System</title>
+  <title data-i18n-title="page.home.title">TeleTriage — Telemedicine Triage System</title>
 
   <!-- Bootstrap 5.3.8 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,7 +17,7 @@
   <!-- Updated Style Link with Versioning -->
   <link rel="stylesheet" href="css/style.css?v=2.0">
 </head>
-<body>
+<body data-i18n-auto>
 
   <!-- HERO & NAV CONTAINER -->
   <header class="brand-bg hero-container position-relative overflow-hidden d-flex flex-column justify-content-between">
@@ -41,20 +41,20 @@
     <div class="container text-center text-white my-auto py-4 z-2 position-relative">
       
       <!-- Main Headline -->
-      <h1 class="text-shadow mb-3">
+      <h1 class="text-shadow mb-3" data-i18n="home.headline" data-i18n-html>
         Welcome to the Telemedicine<br>Triage System
       </h1>
       
       <!-- Subtitle -->
-      <p class="lead mx-auto mb-4 text-shadow-sm">
+      <p class="lead mx-auto mb-4 text-shadow-sm" data-i18n="home.subtitle">
         Submit your symptoms from home, check your priority level, and join the digital live line before traveling to the clinic
       </p>
 
       <!-- Action Buttons -->
       <div class="d-flex justify-content-center gap-3 my-4 flex-wrap">
-        <a href="patient-login.html" class="btn btn-brand rounded-4 fw-bold shadow-sm">I'm a Patient</a>
-        <a href="doctor-login.html" class="btn btn-brand-outline rounded-4 fw-bold">I'm a Doctor</a>
-        <a href="doctor-join.html" class="btn btn-brand-outline rounded-4 fw-bold">Join as Doctor</a>
+        <a href="patient-login.html" class="btn btn-brand rounded-4 fw-bold shadow-sm" data-i18n="home.btn.patient">I'm a Patient</a>
+        <a href="doctor-login.html" class="btn btn-brand-outline rounded-4 fw-bold" data-i18n="home.btn.doctor">I'm a Doctor</a>
+        <a href="doctor-join.html" class="btn btn-brand-outline rounded-4 fw-bold" data-i18n="home.btn.joinDoctor">Join as Doctor</a>
       </div>
 
       <!-- 3-Step Explainer Cards (Spaced out from side illustrations) -->
@@ -62,22 +62,22 @@
         <div class="col-12 col-md-4">
           <div class="card-step text-start h-100">
             <div class="icon-badge"><i class="bi bi-credit-card fs-5"></i></div>
-            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.88rem;">1. Fill Form</h6>
-            <p class="small text-muted mb-0" style="font-size: 0.75rem;">Describe your symptoms in detail</p>
+            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.88rem;" data-i18n="home.step1.title">1. Fill Form</h6>
+            <p class="small text-muted mb-0" style="font-size: 0.75rem;" data-i18n="home.step1.desc">Describe your symptoms in detail</p>
           </div>
         </div>
         <div class="col-12 col-md-4">
           <div class="card-step text-start h-100">
             <div class="icon-badge"><i class="bi bi-clipboard2-pulse fs-5"></i></div>
-            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.88rem;">2. Get Priority</h6>
-            <p class="small text-muted mb-0" style="font-size: 0.75rem;">Auto severity score (1–5)</p>
+            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.88rem;" data-i18n="home.step2.title">2. Get Priority</h6>
+            <p class="small text-muted mb-0" style="font-size: 0.75rem;" data-i18n="home.step2.desc">Auto severity score (1–5)</p>
           </div>
         </div>
         <div class="col-12 col-md-4">
           <div class="card-step text-start h-100">
             <div class="icon-badge"><i class="bi bi-clock-history fs-5"></i></div>
-            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.88rem;">3. Pay &amp; Consult</h6>
-            <p class="small text-muted mb-0" style="font-size: 0.75rem;">Pay BDT 50 via bkash/SSL</p>
+            <h6 class="fw-bold text-dark mb-1" style="font-size: 0.88rem;" data-i18n="home.step3.title">3. Pay &amp; Consult</h6>
+            <p class="small text-muted mb-0" style="font-size: 0.75rem;" data-i18n="home.step3.desc">Pay via bKash / SSLCommerz</p>
           </div>
         </div>
       </div>
@@ -94,11 +94,6 @@
 
   <!-- JS Dependencies -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // Language Switcher Toggle
-    document.getElementById('langToggle').addEventListener('click', function () {
-      this.textContent = this.textContent.trim().startsWith('EN') ? 'বাং | EN' : 'EN | বাং';
-    });
-  </script>
+  <script src="js/i18n.js"></script>
 </body>
 </html>

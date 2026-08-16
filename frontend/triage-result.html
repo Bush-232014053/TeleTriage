@@ -37,7 +37,7 @@
     .step-5 { background-color: #dc2626; } /* Critical (Red) */
   </style>
 </head>
-<body class="bg-light">
+<body class="bg-light" data-i18n-auto>
 
   <div class="d-flex min-vh-100 overflow-hidden">
 
@@ -184,10 +184,8 @@
 
   <!-- Language Switch Script -->
   <script>
-    document.getElementById('langToggle')?.addEventListener('click', function () {
-      this.textContent = this.textContent.trim().startsWith('EN') ? 'বাং | EN' : 'EN | বাং';
-    });
-  </script>
+    </script>
 
+  <script src="js/i18n.js"></script>
 </body>
 </html>

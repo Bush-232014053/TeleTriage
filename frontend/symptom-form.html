@@ -17,7 +17,7 @@
   <!-- Custom App Styles -->
   <link rel="stylesheet" href="css/style.css?v=2.7">
 </head>
-<body class="bg-light">
+<body class="bg-light" data-i18n-auto>
 
   <div class="d-flex min-vh-100 overflow-hidden">
 
@@ -183,15 +183,7 @@
       });
     }
 
-    // 2. Language Toggle
-    const langToggle = document.getElementById('langToggle');
-    if (langToggle) {
-      langToggle.addEventListener('click', function () {
-        this.textContent = this.textContent.trim().startsWith('EN') ? 'বাং | EN' : 'EN | বাং';
-      });
-    }
-
-    // 3. Form Submission — send to backend triage API
+    // Form Submission — send to backend triage API
     document.getElementById('symptomForm')?.addEventListener('submit', async function(e) {
       e.preventDefault();
 
@@ -239,5 +231,6 @@
       }
     });
   </script>
+  <script src="js/i18n.js"></script>
 </body>
 </html>

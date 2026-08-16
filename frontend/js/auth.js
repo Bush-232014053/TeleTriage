@@ -27,13 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const langToggle = document.getElementById('langToggle');
-  if (langToggle) {
-    langToggle.addEventListener('click', function () {
-      this.textContent = this.textContent.trim().startsWith('EN') ? 'বাং | EN' : 'EN | বাং';
-    });
-  }
-
   if (loginForm) {
     loginForm.addEventListener('submit', async function (e) {
       e.preventDefault();
