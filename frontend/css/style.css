@@ -1,0 +1,375 @@
+/* ==========================================================================
+   TeleTriage — Shared Theme
+   Palette (from Figma):
+     --brand-light : #21CBB5  (top of gradient)
+     --brand-dark  : #187D85  (bottom of gradient, blended at 65% opacity)
+     Background texture: Unsplash blue/teal texture, blended at 80%
+   ========================================================================== */
+
+:root {
+  --brand-light: #21CBB5;
+  --brand-dark: #187D85;
+  --ink: #0B3B3A;
+  --panel: #F4FBFA;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", "Segoe UI", system-ui, sans-serif;
+  color: var(--ink);
+  overflow-x: hidden;
+  overflow-y: auto !important;
+}
+
+/* Background blend for exact Figma Teal Tint */
+.brand-bg {
+  background-image: 
+    linear-gradient(180deg, rgba(33, 203, 181, 0.75) 0%, rgba(24, 125, 133, 0.9) 100%),
+    url("../img/texture.jpg");
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: multiply;
+}
+
+.hero-container {
+  min-height: 100vh;
+}
+
+/* Top Strip Header */
+.top-strip {
+  height: 45px;
+}
+
+/* Main Heading & Subtitle Scale */
+.hero-container h1 {
+  font-size: clamp(2.2rem, 3.8vw, 3.5rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.5px;
+}
+
+.hero-container p.lead {
+  font-size: clamp(1.05rem, 1.3vw, 1.25rem) !important;
+  max-width: 700px !important;
+  font-weight: 500 !important;
+  opacity: 0.95;
+}
+
+/* Text Shadows for Focus */
+.text-shadow {
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+}
+
+.text-shadow-sm {
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+}
+
+/* Action Buttons */
+.btn-brand {
+  background: #ffffff;
+  color: #187D85;
+  border: 2px solid #ffffff;
+  min-width: 160px;
+  padding: 12px 28px !important;
+  font-size: 1.05rem !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-brand:hover {
+  background: #eafffb;
+  color: #187D85;
+  transform: translateY(-2px);
+}
+
+.btn-brand-outline {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  min-width: 160px;
+  padding: 12px 28px !important;
+  font-size: 1.05rem !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-brand-outline:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* 3-Step Explainer Cards */
+.card-step {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.2rem 1.2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.card-step .icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 0.5rem;
+  background: #f0fdfa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #187D85;
+  margin-bottom: 0.6rem;
+}
+
+/* Left Illustration (Patient) Positioning */
+.hero-img-left {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 33vw !important;
+  max-width: 450px !important;
+  min-width: 280px !important;
+  z-index: 1;
+  pointer-events: none;
+  object-fit: contain;
+  object-position: bottom left;
+  transform: translateY(1.5%);
+}
+
+/* Right Illustration (Doctor) Positioning */
+.hero-img-right {
+  position: absolute !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  width: 28vw !important;
+  max-width: 390px !important;
+  min-width: 250px !important;
+  z-index: 1;
+  pointer-events: none;
+  object-fit: contain;
+  object-position: bottom right;
+  transform: translateY(2%);
+}
+/* Registration / Auth Custom Styles */
+.custom-input {
+  background-color: #e2e8f0 !important;
+  border: none !important;
+  color: #334155 !important;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 12px 16px;
+  border-radius: 4px !important;
+}
+
+.custom-input::placeholder {
+  color: #1e293b !important;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.custom-input:focus {
+  background-color: #cbd5e1 !important;
+  box-shadow: 0 0 0 2px #187D85 !important;
+}
+
+.btn-register {
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-register:hover {
+  background-color: #136269 !important;
+  transform: translateY(-1px);
+}
+/* Sidebar Navigation Overrides */
+.sidebar-link {
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar-link:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.sidebar-link.active {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  font-weight: 700 !important;
+}
+
+/* Custom Dropdown Input Styling */
+.custom-select {
+  background-color: #e2e8f0 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #1e293b !important;
+  font-weight: 500;
+  padding: 10px 14px;
+  border-radius: 6px !important;
+  cursor: pointer;
+}
+
+.custom-select:focus {
+  border-color: #187D85 !important;
+  box-shadow: 0 0 0 2px rgba(24, 125, 133, 0.2) !important;
+}
+
+.custom-select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  padding: 10px;
+}
+/* --- LOGIN PAGE CUSTOM STYLES --- */
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.brand-teal {
+  color: #187D85;
+}
+
+.btn-teal {
+  background-color: #187D85;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.btn-teal:hover {
+  background-color: #136369;
+  color: #ffffff;
+}
+
+.input-gray {
+  background-color: #E2E8F0;
+  border: none;
+  color: #334155;
+}
+
+.input-gray::placeholder {
+  color: #64748B;
+}
+
+.input-gray:focus {
+  background-color: #E2E8F0;
+  box-shadow: 0 0 0 2px #187D85;
+  outline: none;
+}
+
+.login-hero-bg {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.85), rgba(15, 118, 110, 0.9)), url('../img/texture.jpg') center/cover no-repeat;
+  min-height: 400px;
+}
+
+.lang-btn {
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 0.8rem;
+}
+
+.login-hero-img {
+  max-height: 420px;
+  object-fit: contain;
+}
+
+.login-form-wrapper {
+  max-width: 440px;
+}
+
+#togglePassword {
+  cursor: pointer;
+}
+/* --- APPOINTMENT SLOT PICKER STYLES --- */
+.appointment-card {
+  background-color: #526365; /* Dark greenish slate background from Figma */
+}
+
+.slot-btn {
+  background-color: #e2e8f0;
+  color: #1e293b;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.slot-btn:hover {
+  background-color: #cbd5e1;
+}
+
+.slot-btn.active {
+  background-color: #187d85 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.btn-confirm {
+  background-color: #187d85;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-confirm:hover {
+  background-color: #136369;
+  color: #ffffff;
+}
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #F8FAFC;
+}
+
+/* Left Sidebar Teal Texture */
+.sidebar-bg {
+  background-image: 
+    linear-gradient(180deg, rgba(33, 203, 181, 0.85) 0%, rgba(24, 125, 133, 0.95) 100%),
+    url("../img/texture.jpg");
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: multiply;
+  min-height: 100vh;
+}
+
+/* Brand Button Color Override */
+.btn-teal {
+  background-color: #187D85 !important;
+  transition: all 0.2s ease-in-out;
+}
+.btn-teal:hover {
+  background-color: #136269 !important;
+}
+
+/* Severity Circle Badges */
+.sev-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.sev-1 { background-color: #EF4444; } /* Critical */
+.sev-2 { background-color: #F97316; } /* Urgent */
+.sev-3 { background-color: #EAB308; } /* Moderate */
+.sev-4 { background-color: #84CC16; } /* Low */
+.sev-5 { background-color: #10B981; } /* Non-urgent */
+
+/* Status Badges Matching Figma */
+.status-consulting { 
+  background-color: #FEF3C7; 
+  color: #D97706; 
+  border: 1px solid #FDE68A; 
+}
+.status-review { 
+  background-color: #FFEDD5; 
+  color: #C2410C; 
+  border: 1px solid #FED7AA; 
+}
+.status-queued { 
+  background-color: #E0F2FE; 
+  color: #0369A1; 
+  border: 1px solid #BAE6FD; 
+}
+
+/* Custom Table Styling */
+.custom-table tbody tr {
+  transition: all 0.2s ease;
+}
+.custom-table tbody tr:hover {
+  background-color: #F1F5F9;
+}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointment Slot & Duration Picker — TeleTriage</title>
+
+  <!-- Bootstrap 5.3.8 & Tailwind -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css?v=1.0">
+</head>
+<body class="bg-light">
+
+  <div class="d-flex min-vh-100 overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <aside class="brand-bg text-white d-flex flex-column justify-content-between p-4" style="width: 260px; min-width: 260px;">
+      <div>
+        <a class="d-flex align-items-center text-decoration-none text-white mb-5" href="index.html">
+          <i class="bi bi-plus-square-fill fs-2 me-2"></i>
+          <span class="fs-3 fw-bold">TeleTriage</span>
+        </a>
+
+        <nav class="nav flex-column gap-2">
+          <a class="nav-link sidebar-link d-flex align-items-center gap-3 px-3 py-2 rounded-3" href="patient-dashboard.html">
+            <i class="bi bi-house-door fs-5"></i> Dashboard
+          </a>
+          <a class="nav-link sidebar-link d-flex align-items-center gap-3 px-3 py-2 rounded-3" href="symptom-form.html">
+            <i class="bi bi-file-earmark-text fs-5"></i> Symptom Form
+          </a>
+          <a class="nav-link sidebar-link active d-flex align-items-center gap-3 px-3 py-2 rounded-3" href="triage-result.html">
+            <i class="bi bi-activity fs-5"></i> Triage Result
+          </a>
+          <a class="nav-link sidebar-link d-flex align-items-center gap-3 px-3 py-2 rounded-3" href="payment.html">
+            <i class="bi bi-credit-card fs-5"></i> Payment
+          </a>
+          <a class="nav-link sidebar-link d-flex align-items-center gap-3 px-3 py-2 rounded-3" href="profile.html">
+            <i class="bi bi-person fs-5"></i> Profile
+          </a>
+        </nav>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-between pt-3 border-top border-white-20">
+        <div class="d-flex align-items-center gap-2">
+          <div class="bg-white text-dark rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px;">
+            <i class="bi bi-person-fill fs-5" style="color: #187D85;"></i>
+          </div>
+          <div>
+            <div class="fw-bold lh-1 small text-white" id="sidebarUserName">Patient Name</div>
+            <small class="text-white-50" style="font-size: 0.72rem;">Patient</small>
+          </div>
+        </div>
+        <a href="login.html" class="btn btn-sm btn-light rounded-pill px-3 fw-bold" style="color: #187D85; font-size: 0.8rem;">Log Out</a>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow-1 d-flex flex-column" style="background: linear-gradient(135deg, #e0f2fe 0%, #ccfbf1 100%); position: relative;">
+      
+      <!-- Header -->
+      <header class="bg-white py-3 px-4 shadow-sm d-flex justify-content-between align-items-center">
+        <div class="fw-semibold text-secondary" style="font-size: 0.95rem;">
+          Patient <i class="bi bi-chevron-right mx-1 small"></i> <span style="color: #187D85;" class="fw-bold">Book Appointment</span>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center gap-2 me-2">
+            <div class="bg-light text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+              <i class="bi bi-person-fill fs-5"></i>
+            </div>
+            <div class="text-end">
+              <div class="fw-bold lh-1 small text-dark" id="headerUserName">Patient Name</div>
+              <small class="text-muted" style="font-size: 0.7rem;">Patient</small>
+            </div>
+          </div>
+          <button class="btn btn-sm text-white rounded-pill px-3" style="background-color: #187D85; font-size: 0.8rem;">EN | বাং</button>
+        </div>
+      </header>
+
+      <!-- Slot Picker Container Card -->
+      <div class="p-4 p-md-5 overflow-auto flex-grow-1 d-flex align-items-center justify-content-center">
+        <div class="p-4 p-md-5 rounded-4 shadow-lg w-100 max-w-3xl appointment-card text-white">
+          
+          <h2 class="fw-bold fs-3 text-white mb-4">Book Consultation Slot</h2>
+
+          <!-- Doctor Info Header -->
+          <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3 bg-white/10">
+            <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+              <i class="bi bi-person-fill fs-4 text-slate-600"></i>
+            </div>
+            <div>
+              <span class="fs-5 fw-bold d-block text-white" id="doctorTitle">Dr. Karim - General Physician</span>
+              <small class="text-white-50">Assigned by AI Triage Engine</small>
+            </div>
+          </div>
+
+          <!-- Consultation Duration Selector (10 to 60 Minutes) -->
+          <div class="mb-4">
+            <label for="consultationDuration" class="form-label fw-bold text-white fs-6">
+              <i class="bi bi-clock-history me-1"></i> Select Consultation Duration (10 to 60 Mins):
+            </label>
+            <select id="consultationDuration" class="form-select form-select-lg rounded-3 border-0 shadow-sm" onchange="calculateFee()">
+              <option value="10" selected>10 Minutes (Standard - 100 BDT)</option>
+              <option value="20">20 Minutes (200 BDT)</option>
+              <option value="30">30 Minutes (300 BDT)</option>
+              <option value="45">45 Minutes (450 BDT)</option>
+              <option value="60">60 Minutes / 1 Hour (Maximum - 600 BDT)</option>
+            </select>
+          </div>
+
+          <!-- Time Slots Selection -->
+          <label class="form-label fw-bold text-white fs-6 mb-2">
+            <i class="bi bi-calendar-event me-1"></i> Select Available Time Slot:
+          </label>
+          <div class="row g-3 mb-4" id="slotContainer">
+            <div class="col-6 col-md-3">
+              <button class="btn slot-btn active w-100 py-2 fw-semibold" data-slot="9:00 AM">9:00 AM</button>
+            </div>
+            <div class="col-6 col-md-3">
+              <button class="btn slot-btn w-100 py-2 fw-semibold" data-slot="10:00 AM">10:00 AM</button>
+            </div>
+            <div class="col-6 col-md-3">
+              <button class="btn slot-btn w-100 py-2 fw-semibold" data-slot="11:00 AM">11:00 AM</button>
+            </div>
+            <div class="col-6 col-md-3">
+              <button class="btn slot-btn w-100 py-2 fw-semibold" data-slot="03:00 PM">03:00 PM</button>
+            </div>
+          </div>
+
+          <!-- Dynamic Fee Display -->
+          <div class="d-flex align-items-center justify-content-between p-3 rounded-3 mb-4 bg-white text-dark shadow-sm">
+            <span class="fw-semibold fs-6">Total Consultation Fee:</span>
+            <span class="fs-4 fw-bold text-teal-700" id="totalFeeDisplay">100 BDT</span>
+          </div>
+
+          <!-- Confirm Appointment & Proceed to Payment Button -->
+          <button id="confirmApptBtn" class="btn btn-confirm py-3 px-4 w-100 rounded-3 fw-bold fs-5 shadow">
+            Proceed to Payment
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Confirmation Modal Overlay -->
+      <div id="confirmationOverlay" class="position-absolute top-0 start-0 w-100 h-100 d-none align-items-center justify-content-center bg-black/40 z-50">
+        <div class="bg-white rounded-4 shadow-2xl p-5 text-center max-w-md w-100 mx-3 animate-fade-in">
+          
+          <h3 class="fw-bold fs-3 text-slate-800 mb-3">Slot Selected!</h3>
+
+          <div class="d-inline-flex align-items-center justify-content-center rounded-circle border-2 border-emerald-400 p-3 mb-3" style="width: 70px; height: 70px; background-color: #ecfdf5;">
+            <i class="bi bi-check-lg fs-1 text-emerald-500"></i>
+          </div>
+
+          <p class="text-secondary fs-6 mb-4 lh-base">
+            Your consultation with <span class="fw-bold text-dark" id="modalDocName">Dr. Karim</span> is scheduled for <span class="fw-bold text-dark" id="modalSelectedDuration">10 Mins</span> at <span class="fw-bold text-dark" id="modalSelectedTime">9:00 AM</span>. Total Fee: <strong text-emerald-600 id="modalFee">100 BDT</strong>.
+          </p>
+
+          <a href="payment.html" class="btn btn-teal px-4 py-2 rounded-3 fw-bold fs-6 w-100">
+            Go to Payment Gateway (bKash / SSLCommerz)
+          </a>
+
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/appointment.js"></script>
+  <script>
+    function calculateFee() {
+      const duration = document.getElementById('consultationDuration').value;
+      const totalFee = (duration / 10) * 100;
+      document.getElementById('totalFeeDisplay').innerText = totalFee + ' BDT';
+      if(document.getElementById('modalFee')) {
+        document.getElementById('modalFee').innerText = totalFee + ' BDT';
+      }
+    }
+  </script>
+</body>
+</html>

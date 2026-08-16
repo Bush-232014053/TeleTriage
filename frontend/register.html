@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Registration — TeleTriage</title>
+
+  <!-- Bootstrap 5.3.8 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <!-- Google Fonts (Poppins) -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Custom App Styles -->
+  <link rel="stylesheet" href="css/style.css?v=2.5">
+</head>
+<body class="brand-bg min-vh-100 d-flex flex-column justify-content-between position-relative">
+
+  <!-- Top Navigation Bar: Brand Logo & Language Toggle -->
+  <header class="w-100 py-3 px-4 d-flex justify-content-between align-items-center position-absolute top-0 start-0 z-3">
+    <!-- Brand Logo -->
+    <a class="d-flex align-items-center text-decoration-none text-white ms-2" href="index.html">
+      <i class="bi bi-plus-square-fill fs-2 me-2"></i>
+      <span class="fs-3 fw-bold" style="font-family: 'Poppins', sans-serif;">TeleTriage</span>
+    </a>
+
+    <!-- Language Selector Button -->
+    <button class="btn btn-sm text-white rounded-pill px-3 me-2" id="langToggle" style="border: 1px solid rgba(255,255,255,0.8); font-size: 0.8rem; background: rgba(255,255,255,0.1);">EN | বাং</button>
+  </header>
+
+  <!-- Main Registration Card Area -->
+  <main class="container d-flex justify-content-center align-items-center flex-grow-1 py-5 my-5">
+    <div class="auth-card bg-light rounded-4 shadow-lg p-4 p-sm-5 text-center position-relative z-2 w-100" style="max-width: 480px; background-color: #f8fafc !important;">
+      
+      <!-- Card Heading -->
+      <h2 class="auth-title mb-4 fw-bold" style="color: #187D85; font-size: 1.85rem;">Patient Registration</h2>
+
+      <!-- Alert Banner for JS Validation Messages -->
+      <div id="alertMsg" class="alert d-none py-2 text-start small mb-3" role="alert"></div>
+
+      <!-- Registration Form -->
+      <form id="registerForm" class="d-flex flex-column gap-3">
+        
+        <!-- Input: Full Name -->
+        <div>
+          <input type="text" id="fullName" class="form-control form-control-lg custom-input" placeholder="Full Name" required>
+        </div>
+
+        <!-- Input: Email Address -->
+        <div>
+          <input type="email" id="email" class="form-control form-control-lg custom-input" placeholder="E-mail Address" required>
+        </div>
+
+        <!-- Input: Phone Number -->
+        <div>
+          <input type="tel" id="phone" class="form-control form-control-lg custom-input" placeholder="Phone Number" required>
+        </div>
+
+        <!-- Input: Password -->
+        <div class="position-relative">
+          <input type="password" id="password" class="form-control form-control-lg custom-input pe-5" placeholder="Password" required>
+        </div>
+
+        <!-- Input: Confirm Password with Visibility Toggle -->
+        <div class="position-relative">
+          <input type="password" id="confirmPassword" class="form-control form-control-lg custom-input pe-5" placeholder="Confirm Password" required>
+          <i class="bi bi-eye position-absolute top-50 end-0 translate-middle-y me-3 text-secondary cursor-pointer" id="toggleConfirmPassword" style="cursor: pointer;"></i>
+        </div>
+
+        <!-- Password Policy Hint -->
+        <small class="text-muted text-start d-block" style="font-size: 0.72rem; margin-top: -4px;">
+          * Must contain 8+ characters, upper & lowercase letters, a number, and a symbol.
+        </small>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-register w-100 py-3 fw-bold mt-2 text-white" style="background-color: #187D85; border-radius: 30px; font-size: 1.3rem;">
+          Register
+        </button>
+
+      </form>
+
+      <!-- Navigation Link to Login -->
+      <p class="mt-4 mb-0 text-secondary" style="font-size: 0.95rem;">
+        Already have an account? <a href="login.html" class="fw-bold text-decoration-underline" style="color: #187D85;">Log In</a>
+      </p>
+
+    </div>
+  </main>
+
+  <!-- External JS Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom Application Scripts -->
+  <script src="js/teleauth.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
