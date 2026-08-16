@@ -1,4 +1,4 @@
-// Priority queue page — live queue with search/filter from API.
+// Priority queue page — live queue with search/filter + Socket.IO updates.
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!TeleTriageAPI.getToken()) {
@@ -10,10 +10,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const statusFilter = document.getElementById('statusFilter');
   const queueBody = document.getElementById('queueTableBody');
   const statCards = document.querySelectorAll('.row.g-3.mb-4 .fs-3.fw-bold');
-  const sidebarName = document.querySelector('aside h6.mb-0');
-  const sidebarSpec = document.querySelector('aside small.text-white-50');
+  const sidebarName = document.getElementById('sidebarDoctorName') || document.querySelector('aside h6.mb-0');
+  const sidebarSpec = document.getElementById('sidebarDoctorSpec') || document.querySelector('aside small.text-white-50');
 
   let allQueue = [];
+  let doctorSpecialty = null;
 
   try {
     const [profile, stats, queueData] = await Promise.all([
@@ -22,18 +23,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       TeleTriageAPI.request('/api/doctors/queue'),
     ]);
 
-    if (sidebarName) sidebarName.textContent = profile.full_name || 'Doctor';
-    if (sidebarSpec) sidebarSpec.textContent = profile.specialty || '';
+    doctorSpecialty = profile.specialty || null;
+    const name = profile.full_name || 'Doctor';
+    if (sidebarName) sidebarName.textContent = name;
+    if (sidebarSpec) sidebarSpec.textContent = doctorSpecialty || '';
 
-    if (statCards.length >= 4) {
-      statCards[0].textContent = `${stats.criticalCount ?? 0} Patient${stats.criticalCount === 1 ? '' : 's'}`;
-      statCards[1].textContent = `${stats.urgentCount ?? 0} Patient${stats.urgentCount === 1 ? '' : 's'}`;
-      statCards[2].textContent = `${stats.moderateOrLowCount ?? 0} Patient${stats.moderateOrLowCount === 1 ? '' : 's'}`;
-      statCards[3].textContent = `${stats.activeCount ?? 0} In Line`;
+    updateStatCards(stats);
+    applyQueue(queueData.queue || []);
+
+    if (doctorSpecialty) {
+      TeleTriageSocket.joinDoctorQueue(doctorSpecialty, (queue) => {
+        applyQueue(Array.isArray(queue) ? queue : []);
+        updateStatCards(computeStatsFromQueue(allQueue));
+      });
     }
-
-    allQueue = queueData.queue || [];
-    renderQueue(allQueue);
   } catch (err) {
     console.error('Priority queue load failed:', err);
     if (queueBody) {
@@ -42,6 +45,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (err.status === 401 || err.status === 403) {
       window.location.href = 'doctor-login.html';
     }
+  }
+
+  function applyQueue(queue) {
+    allQueue = queue;
+    filterQueue();
+  }
+
+  function updateStatCards(stats) {
+    if (statCards.length < 4 || !stats) return;
+    statCards[0].textContent = `${stats.criticalCount ?? 0} Patient${stats.criticalCount === 1 ? '' : 's'}`;
+    statCards[1].textContent = `${stats.urgentCount ?? 0} Patient${stats.urgentCount === 1 ? '' : 's'}`;
+    statCards[2].textContent = `${stats.moderateOrLowCount ?? 0} Patient${stats.moderateOrLowCount === 1 ? '' : 's'}`;
+    statCards[3].textContent = `${stats.activeCount ?? 0} In Line`;
+  }
+
+  function computeStatsFromQueue(queue) {
+    const criticalCount = queue.filter((e) => e.severityScore === 1).length;
+    const urgentCount = queue.filter((e) => e.severityScore === 2).length;
+    const moderateOrLowCount = queue.filter((e) => e.severityScore >= 3).length;
+    return {
+      criticalCount,
+      urgentCount,
+      moderateOrLowCount,
+      activeCount: queue.length,
+    };
   }
 
   function renderQueue(queue) {
@@ -78,14 +106,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     queueBody.querySelectorAll('[data-action="review"]').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const queueId = btn.dataset.queueId;
+        btn.disabled = true;
         try {
           await TeleTriageAPI.request(`/api/doctors/queue/${queueId}/status`, {
             method: 'PATCH',
             body: JSON.stringify({ status: 'Under Review' }),
           });
-          alert('Case marked as Under Review.');
-          location.reload();
+          btn.textContent = 'Under Review';
         } catch (e) {
+          btn.disabled = false;
           alert(e.message || 'Could not update case status.');
         }
       });
