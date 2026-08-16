@@ -1,4 +1,4 @@
-// js/doctor-login-controller.js — Handles Doctor Login Page Logic
+// Doctor login — wired to backend API
 
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('doctorLoginForm');
@@ -8,39 +8,39 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggleEyeIcon = document.getElementById('toggleEyeIcon');
   const alertBox = document.getElementById('loginAlert');
 
-  // 1. Password Visibility Toggle
-  if (toggleBtn) {
+  if (toggleBtn && passwordInput) {
     toggleBtn.addEventListener('click', () => {
       const isPassword = passwordInput.type === 'password';
       passwordInput.type = isPassword ? 'text' : 'password';
-      toggleEyeIcon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
+      if (toggleEyeIcon) toggleEyeIcon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
     });
   }
 
-  // 2. Form Submission & Validation
   if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const docId = doctorIdInput.value.trim();
-      const password = passwordInput.value.trim();
+      const doctorId = doctorIdInput.value.trim();
+      const password = passwordInput.value;
 
-      if (!docId || !password) {
+      if (!doctorId || !password) {
         showError('Please enter both Doctor ID and Password.');
         return;
       }
 
-      // Save active doctor session info
-      const activeDoctor = {
-        id: docId,
-        name: docId.startsWith('DOC') ? docId : 'Dr. Karim',
-        role: 'Doctor',
-        loggedInAt: new Date().toISOString()
-      };
-      localStorage.setItem('teletriage_active_doctor', JSON.stringify(activeDoctor));
+      try {
+        const data = await TeleTriageAPI.request('/api/auth/login/doctor', {
+          method: 'POST',
+          body: JSON.stringify({ doctorId, password }),
+        });
 
-      // Redirect to Doctor Dashboard
-      window.location.href = 'doctor-dashboard.html';
+        TeleTriageAPI.setToken(data.token);
+        sessionStorage.setItem('teletriage_doctor', JSON.stringify(data.user));
+
+        window.location.href = 'doctor-dashboard.html';
+      } catch (err) {
+        showError(err.message || 'Invalid doctor ID or password.');
+      }
     });
   }
 

@@ -170,6 +170,7 @@
 
   <!-- External JS Dependencies -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
   
   <script>
     // 1. Update Pain Level slider text
@@ -190,23 +191,52 @@
       });
     }
 
-    // 3. Form Submission & Save to LocalStorage
-    document.getElementById('symptomForm')?.addEventListener('submit', function(e) {
+    // 3. Form Submission — send to backend triage API
+    document.getElementById('symptomForm')?.addEventListener('submit', async function(e) {
       e.preventDefault();
 
-      const symptomData = {
-        complaint: document.getElementById('chiefComplaint').value,
-        duration: document.getElementById('duration').value.toLowerCase(),
-        bodyLocation: document.getElementById('bodyLocation').value,
-        pain: Number(document.getElementById('painLevel').value),
-        notes: document.getElementById('additionalNotes').value
+      if (!TeleTriageAPI.getToken()) {
+        alert('Please log in first.');
+        window.location.href = 'patient-login.html';
+        return;
+      }
+
+      const payload = {
+        chiefComplaint: document.getElementById('chiefComplaint').value.trim(),
+        duration: document.getElementById('duration').value,
+        bodyLocation: document.getElementById('bodyLocation').value.trim(),
+        painLevel: Number(document.getElementById('painLevel').value),
+        notes: document.getElementById('additionalNotes').value.trim()
       };
 
-      // Save form data for Triage Engine
-      localStorage.setItem('teletriage_symptom_form', JSON.stringify(symptomData));
+      const submitBtn = this.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+      }
 
-      // Redirect to Triage Result Page
-      window.location.href = 'triage-result.html';
+      try {
+        const data = await TeleTriageAPI.request('/api/patients/symptoms', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+
+        sessionStorage.setItem('teletriage_submission_id', String(data.submissionId));
+        sessionStorage.setItem('teletriage_triage', JSON.stringify({
+          ...data.triage,
+          painLevel: payload.painLevel,
+          chiefComplaint: payload.chiefComplaint,
+        }));
+        sessionStorage.setItem('teletriage_fee', '100');
+
+        window.location.href = 'triage-result.html';
+      } catch (err) {
+        alert(err.message || 'Failed to submit symptoms.');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Symptoms';
+        }
+      }
     });
   </script>
 </body>
