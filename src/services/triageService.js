@@ -5,31 +5,14 @@ require('dotenv').config();
 const { scoreSymptoms } = require('./triageRules');
 
 const TRIAGE_SERVICE_URL = process.env.TRIAGE_SERVICE_URL || 'http://localhost:6000';
-const REQUEST_TIMEOUT_MS = Number(process.env.TRIAGE_TIMEOUT_MS || 30000);
-const MAX_ATTEMPTS = 3;
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+// Fail fast — patients should not wait on a sleeping microservice.
+const REQUEST_TIMEOUT_MS = Number(process.env.TRIAGE_TIMEOUT_MS || 4000);
 
 async function callTriageEngine(payload) {
-  let lastError;
-
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
-    try {
-      const response = await axios.post(`${TRIAGE_SERVICE_URL}/score`, payload, {
-        timeout: REQUEST_TIMEOUT_MS,
-      });
-      return response.data;
-    } catch (err) {
-      lastError = err;
-      if (attempt < MAX_ATTEMPTS) {
-        await sleep(2000 * attempt);
-      }
-    }
-  }
-
-  throw lastError;
+  const response = await axios.post(`${TRIAGE_SERVICE_URL}/score`, payload, {
+    timeout: REQUEST_TIMEOUT_MS,
+  });
+  return response.data;
 }
 
 async function getTriageScore({ complaint, duration, pain, bodyLocation }) {
