@@ -1,0 +1,84 @@
+# TeleTriage — Render.com deployment blueprint
+# Repo: https://github.com/Bush-232014053/TeleTriage
+# One-click deploy: https://render.com/deploy?repo=https://github.com/Bush-232014053/TeleTriage
+
+databases:
+  - name: teletriage-db
+    plan: free
+    databaseName: teletriage
+    user: teletriage
+
+services:
+  # Python triage microservice
+  - type: web
+    name: teletriage-triage
+    runtime: python
+    plan: free
+    rootDir: triage-engine
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    healthCheckPath: /health
+    envVars:
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: PYTHON_VERSION
+        value: "3.11.11"
+
+  # Node.js API + frontend
+  - type: web
+    name: teletriage-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node src/start-production.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22.12.0"
+      - key: NODE_ENV
+        value: production
+      - key: PGSSL
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: teletriage-db
+          property: connectionString
+      - key: TRIAGE_SERVICE_URL
+        fromService:
+          type: web
+          name: teletriage-triage
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: APP_BASE_URL
+        fromService:
+          type: web
+          name: teletriage-api
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: FRONTEND_ORIGIN
+        fromService:
+          type: web
+          name: teletriage-api
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: BKASH_SANDBOX
+        value: "true"
+      - key: BKASH_BASE_URL
+        value: https://tokenized.sandbox.bka.sh/v1.2.0-beta
+      - key: BKASH_APP_KEY
+        value: 4f6o0cjiki2rfm34kfdadl1eqq
+      - key: BKASH_APP_SECRET
+        value: 2is7hdktrekvrbljjh44ll3d9l1dtjo4pasmjvs5vl5qr3fug4b
+      - key: BKASH_USERNAME
+        value: sandboxTokenizedUser02
+      - key: BKASH_PASSWORD
+        value: sandboxTokenizedUser02@12345
+      - key: SSLCOMMERZ_STORE_ID
+        value: testbox
+      - key: SSLCOMMERZ_STORE_PASSWORD
+        value: qwerty
+      - key: SSLCOMMERZ_IS_LIVE
+        value: "false"
+      - key: CONSULTATION_FEE
+        value: "100"
+      - key: FEE_PER_10_MIN
+        value: "100"

@@ -82,8 +82,9 @@ app.get('*', (req, res) => {
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`TeleTriage backend listening on http://localhost:${PORT}`);
+const HOST = process.env.HOST || '0.0.0.0';
+server.listen(PORT, HOST, () => {
+  console.log(`TeleTriage backend listening on http://${HOST}:${PORT}`);
 });
 
 module.exports = { app, server, io };

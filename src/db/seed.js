@@ -1,16 +1,13 @@
-// One-time seed script — creates the schema, an admin account, and a
-// handful of pre-registered doctors (one per specialty the triage engine
-// routes to) so the demo works immediately after `npm run seed`.
-// Run with: npm run seed
+// Database seed — creates schema, admin, and demo doctors.
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const pool = require('../config/db');
 
-const DEMO_PASSWORD = 'Password1!'; // demo/sandbox only — never use a fixed password in production
+const DEMO_PASSWORD = 'Password1!';
 
-async function run() {
+async function runSeed({ closePool = true } = {}) {
   console.log('Applying schema...');
   const schemaSql = fs.readFileSync(path.join(__dirname, '../../db/schema.sql'), 'utf8');
   await pool.query(schemaSql);
@@ -44,15 +41,20 @@ async function run() {
     );
   }
 
-  console.log('\nSeed complete.');
-  console.log(`  Admin login    -> username: admin           password: ${DEMO_PASSWORD}`);
-  console.log(`  Doctor logins  -> doctorCode: DOC-001..006   password: ${DEMO_PASSWORD}`);
-  console.log('  (Patients register themselves via POST /api/auth/register.)');
-
-  await pool.end();
+  console.log('Seed complete.');
+  if (closePool) await pool.end();
 }
 
-run().catch((err) => {
-  console.error('Seed failed:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  runSeed()
+    .then(() => {
+      console.log(`  Admin login    -> username: admin           password: ${DEMO_PASSWORD}`);
+      console.log(`  Doctor logins  -> doctorCode: DOC-001..006   password: ${DEMO_PASSWORD}`);
+    })
+    .catch((err) => {
+      console.error('Seed failed:', err);
+      process.exit(1);
+    });
+}
+
+module.exports = { runSeed };
