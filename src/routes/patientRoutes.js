@@ -3,7 +3,12 @@ const router = express.Router();
 const asyncHandler = require('../utils/asyncHandler');
 const { requireAuth, requireRole } = require('../middleware/auth');
 const {
-  submitSymptoms, getTriageResult, getMyStatus, getMyHistory, getMyProfile,
+  submitSymptoms,
+  getTriageResult,
+  getMyStatus,
+  getMyHistory,
+  getMyProfile,
+  getRecommendedDoctors,
 } = require('../controllers/patientController');
 
 // Every route below requires a valid patient JWT.
@@ -15,6 +20,8 @@ router.get('/me', asyncHandler(getMyProfile));
 router.post('/symptoms', asyncHandler(submitSymptoms));
 // GET  /api/patients/triage/:submissionId      — re-fetch a triage result
 router.get('/triage/:submissionId', asyncHandler(getTriageResult));
+// GET  /api/patients/triage/:submissionId/doctors — matched doctors for consultation
+router.get('/triage/:submissionId/doctors', asyncHandler(getRecommendedDoctors));
 // GET  /api/patients/me/status                 — current queue position/status
 router.get('/me/status', asyncHandler(getMyStatus));
 // GET  /api/patients/me/history                — this patient's past completed cases

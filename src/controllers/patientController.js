@@ -177,4 +177,71 @@ async function getMyProfile(req, res) {
   res.json(rows[0]);
 }
 
-module.exports = { submitSymptoms, getTriageResult, getMyStatus, getMyHistory, getMyProfile };
+// GET /api/patients/triage/:submissionId/doctors
+// Returns detected problem summary + doctors best matched to the triage specialty.
+async function getRecommendedDoctors(req, res) {
+  const patientId = req.user.id;
+  const { submissionId } = req.params;
+
+  const { rows } = await pool.query(
+    `SELECT tr.assigned_specialty, tr.severity_score, tr.urgency_label,
+            s.chief_complaint, s.pain_level, s.duration, s.body_location
+     FROM symptom_submissions s
+     JOIN triage_results tr ON tr.submission_id = s.submission_id
+     WHERE s.submission_id = $1 AND s.patient_id = $2`,
+    [submissionId, patientId]
+  );
+
+  if (rows.length === 0) {
+    return res.status(404).json({ error: 'Triage submission not found.' });
+  }
+
+  const triage = rows[0];
+
+  const { rows: doctors } = await pool.query(
+    `SELECT d.doctor_id, d.doctor_code, d.full_name, d.specialty,
+            COALESCE(
+              (SELECT COUNT(*)::int FROM queue_entries q
+               JOIN triage_results tr2 ON tr2.triage_id = q.triage_id
+               WHERE q.assigned_doctor_id = d.doctor_id AND q.status != 'Completed'),
+              0
+            ) AS active_cases
+     FROM doctors d
+     WHERE d.specialty = $1 AND d.is_active = TRUE
+     ORDER BY active_cases ASC, d.full_name ASC`,
+    [triage.assigned_specialty]
+  );
+
+  const recommendedDoctors = doctors.map((d, index) => ({
+    doctorId: d.doctor_id,
+    doctorCode: d.doctor_code,
+    fullName: d.full_name,
+    specialty: d.specialty,
+    activeCases: Number(d.active_cases),
+    matchScore: Math.max(60, 100 - Number(d.active_cases) * 8 - index * 2),
+    rank: index + 1,
+  }));
+
+  res.json({
+    detectedProblem: {
+      chiefComplaint: triage.chief_complaint,
+      bodyLocation: triage.body_location,
+      duration: triage.duration,
+      painLevel: triage.pain_level,
+      severityScore: triage.severity_score,
+      urgencyLabel: triage.urgency_label,
+      specialty: triage.assigned_specialty,
+      summary: `Based on your symptoms, we detected a ${triage.urgency_label.toLowerCase()} case requiring ${triage.assigned_specialty}.`,
+    },
+    recommendedDoctors,
+  });
+}
+
+module.exports = {
+  submitSymptoms,
+  getTriageResult,
+  getMyStatus,
+  getMyHistory,
+  getMyProfile,
+  getRecommendedDoctors,
+};

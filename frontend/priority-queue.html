@@ -12,7 +12,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/priority-queue.css">
+  <style>
+    .sev-badge { display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-weight:700;font-size:.85rem;color:#fff; }
+    .sev-1{background:#dc2626}.sev-2{background:#f97316}.sev-3{background:#0ea5e9}.sev-4,.sev-5{background:#22c55e}
+  </style>
 </head>
 <body class="overflow-x-hidden" style="background-color: #E6F8F6;">
 
@@ -51,8 +54,8 @@
             <i class="bi bi-person-fill fs-4"></i>
           </div>
           <div class="lh-sm">
-            <h6 class="mb-0 fw-bold fs-6">Dr. Alex Rivera</h6>
-            <small class="text-white-50" style="font-size: 0.75rem;">Cardiologist</small>
+            <h6 class="mb-0 fw-bold fs-6" id="sidebarDoctorName">Doctor</h6>
+            <small class="text-white-50" style="font-size: 0.75rem;" id="sidebarDoctorSpec">Specialist</small>
           </div>
         </div>
         <a href="doctor-login.html" class="btn btn-light text-slate-700 fw-semibold w-100 rounded-pill py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
@@ -107,7 +110,7 @@
       <div class="bg-white p-3 rounded-4 shadow-sm mb-4 border">
         <div class="row g-3 align-items-center">
           <div class="col-md-3">
-            <select class="form-select border-0 bg-slate-100 rounded-3 text-slate-700 fw-medium">
+            <select class="form-select border-0 bg-slate-100 rounded-3 text-slate-700 fw-medium" id="statusFilter">
               <option value="all">All Statuses</option>
               <option value="consulting">Consulting</option>
               <option value="under_review">Under Review</option>
@@ -117,7 +120,7 @@
           <div class="col-md-9">
             <div class="input-group">
               <span class="input-group-text border-0 bg-slate-100 text-slate-400"><i class="bi bi-search"></i></span>
-              <input type="text" class="form-control border-0 bg-slate-100 rounded-end-3" placeholder="Search by patient ID, name, or status...">
+              <input type="text" id="searchInput" class="form-control border-0 bg-slate-100 rounded-end-3" placeholder="Search by patient ID, name, or status...">
             </div>
           </div>
         </div>
@@ -136,132 +139,8 @@
                 <th class="text-end pe-4 py-3">QUICK ACTION</th>
               </tr>
             </thead>
-            <tbody class="fs-6 text-slate-700">
-              <!-- 1. Critical -->
-              <tr>
-                <td class="ps-4 fw-bold text-slate-800">1</td>
-                <td class="fw-bold text-slate-800">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-person-fill fs-5 text-slate-400"></i>
-                    Patient 1 <span class="badge bg-slate-100 text-slate-400 font-mono small ms-1 fw-normal">#PT-9021</span>
-                  </div>
-                </td>
-                <td>
-                  <span class="d-inline-flex align-items-center gap-2">
-                    <span class="sev-badge sev-1">1</span> 
-                    <span class="fw-bold text-danger">Critical</span>
-                  </span>
-                </td>
-                <td><span class="badge px-3 py-2 rounded-pill fw-medium" style="background-color: #FEF3C7; color: #92400E;">Consulting</span></td>
-                <td class="text-end pe-4">
-                  <button class="btn btn-sm btn-outline-secondary rounded-3 px-3"><i class="bi bi-file-earmark-medical me-1"></i> View Record</button>
-                </td>
-              </tr>
-
-              <!-- 2. Urgent -->
-              <tr>
-                <td class="ps-4 fw-bold text-slate-800">2</td>
-                <td class="fw-bold text-slate-800">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-person-fill fs-5 text-slate-400"></i>
-                    Patient 2 <span class="badge bg-slate-100 text-slate-400 font-mono small ms-1 fw-normal">#PT-9022</span>
-                  </div>
-                </td>
-                <td>
-                  <span class="d-inline-flex align-items-center gap-2">
-                    <span class="sev-badge sev-2">2</span> 
-                    <span class="fw-bold" style="color: #F97316;">Urgent</span>
-                  </span>
-                </td>
-                <td><span class="badge px-3 py-2 rounded-pill fw-medium" style="background-color: #FFEDD5; color: #C2410C;">Under Review</span></td>
-                <td class="text-end pe-4">
-                  <button class="btn btn-sm btn-outline-secondary rounded-3 px-3"><i class="bi bi-file-earmark-medical me-1"></i> View Record</button>
-                </td>
-              </tr>
-
-              <!-- 3. Urgent -->
-              <tr>
-                <td class="ps-4 fw-bold text-slate-800">3</td>
-                <td class="fw-bold text-slate-800">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-person-fill fs-5 text-slate-400"></i>
-                    Patient 3 <span class="badge bg-slate-100 text-slate-400 font-mono small ms-1 fw-normal">#PT-9023</span>
-                  </div>
-                </td>
-                <td>
-                  <span class="d-inline-flex align-items-center gap-2">
-                    <span class="sev-badge sev-2">2</span> 
-                    <span class="fw-bold" style="color: #F97316;">Urgent</span>
-                  </span>
-                </td>
-                <td><span class="badge px-3 py-2 rounded-pill fw-medium" style="background-color: #E0F2FE; color: #0369A1;">Queued</span></td>
-                <td class="text-end pe-4">
-                  <button class="btn btn-sm btn-outline-secondary rounded-3 px-3"><i class="bi bi-file-earmark-medical me-1"></i> View Record</button>
-                </td>
-              </tr>
-
-              <!-- 4. Moderate -->
-              <tr>
-                <td class="ps-4 fw-bold text-slate-800">4</td>
-                <td class="fw-bold text-slate-800">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-person-fill fs-5 text-slate-400"></i>
-                    Patient 4 <span class="badge bg-slate-100 text-slate-400 font-mono small ms-1 fw-normal">#PT-9024</span>
-                  </div>
-                </td>
-                <td>
-                  <span class="d-inline-flex align-items-center gap-2">
-                    <span class="sev-badge sev-3">3</span> 
-                    <span class="fw-bold text-info">Moderate</span>
-                  </span>
-                </td>
-                <td><span class="badge px-3 py-2 rounded-pill fw-medium" style="background-color: #E0F2FE; color: #0369A1;">Queued</span></td>
-                <td class="text-end pe-4">
-                  <button class="btn btn-sm btn-outline-secondary rounded-3 px-3"><i class="bi bi-file-earmark-medical me-1"></i> View Record</button>
-                </td>
-              </tr>
-
-              <!-- 5. Moderate -->
-              <tr>
-                <td class="ps-4 fw-bold text-slate-800">5</td>
-                <td class="fw-bold text-slate-800">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-person-fill fs-5 text-slate-400"></i>
-                    Patient 5 <span class="badge bg-slate-100 text-slate-400 font-mono small ms-1 fw-normal">#PT-9025</span>
-                  </div>
-                </td>
-                <td>
-                  <span class="d-inline-flex align-items-center gap-2">
-                    <span class="sev-badge sev-3">3</span> 
-                    <span class="fw-bold text-info">Moderate</span>
-                  </span>
-                </td>
-                <td><span class="badge px-3 py-2 rounded-pill fw-medium" style="background-color: #E0F2FE; color: #0369A1;">Queued</span></td>
-                <td class="text-end pe-4">
-                  <button class="btn btn-sm btn-outline-secondary rounded-3 px-3"><i class="bi bi-file-earmark-medical me-1"></i> View Record</button>
-                </td>
-              </tr>
-
-              <!-- 6. Low -->
-              <tr>
-                <td class="ps-4 fw-bold text-slate-800">6</td>
-                <td class="fw-bold text-slate-800">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-person-fill fs-5 text-slate-400"></i>
-                    Patient 6 <span class="badge bg-slate-100 text-slate-400 font-mono small ms-1 fw-normal">#PT-9026</span>
-                  </div>
-                </td>
-                <td>
-                  <span class="d-inline-flex align-items-center gap-2">
-                    <span class="sev-badge sev-4">4</span> 
-                    <span class="fw-bold text-success">Low</span>
-                  </span>
-                </td>
-                <td><span class="badge px-3 py-2 rounded-pill fw-medium" style="background-color: #DCFCE7; color: #15803D;">Queued</span></td>
-                <td class="text-end pe-4">
-                  <button class="btn btn-sm btn-outline-secondary rounded-3 px-3"><i class="bi bi-file-earmark-medical me-1"></i> View Record</button>
-                </td>
-              </tr>
+            <tbody class="fs-6 text-slate-700" id="queueTableBody">
+              <tr><td colspan="5" class="text-center text-muted py-4">Loading queue…</td></tr>
             </tbody>
           </table>
         </div>
@@ -269,9 +148,10 @@
     </main>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/priority-queue.js"></script>
   <script>
-    // Language Switcher Toggle
-    document.getElementById('langToggle').addEventListener('click', function () {
+    document.getElementById('langToggle')?.addEventListener('click', function () {
       this.textContent = this.textContent.trim().startsWith('EN') ? 'বাং | EN' : 'EN | বাং';
     });
   </script>

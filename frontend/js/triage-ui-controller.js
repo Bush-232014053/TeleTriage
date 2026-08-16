@@ -44,23 +44,23 @@ document.addEventListener('DOMContentLoaded', () => {
   if (cssClass === 'urgent') {
     if (statusBanner) statusBanner.style.backgroundColor = '#dc2626';
     if (actionBtn) {
-      actionBtn.textContent = 'Proceed to Urgent Payment';
-      actionBtn.setAttribute('href', 'payment.html');
+      actionBtn.textContent = 'View Matched Doctors';
+      actionBtn.setAttribute('href', 'doctor-match.html');
     }
     document.getElementById('step4')?.classList.add('active');
     document.getElementById('step5')?.classList.add('active');
   } else if (cssClass === 'moderate') {
     if (statusBanner) statusBanner.style.backgroundColor = '#eab308';
     if (actionBtn) {
-      actionBtn.textContent = 'Proceed to Payment';
-      actionBtn.setAttribute('href', 'payment.html');
+      actionBtn.textContent = 'View Matched Doctors';
+      actionBtn.setAttribute('href', 'doctor-match.html');
     }
     document.getElementById('step3')?.classList.add('active');
   } else {
     if (statusBanner) statusBanner.style.backgroundColor = '#84cc16';
     if (actionBtn) {
-      actionBtn.textContent = 'Proceed to Payment';
-      actionBtn.setAttribute('href', 'payment.html');
+      actionBtn.textContent = 'View Matched Doctors';
+      actionBtn.setAttribute('href', 'doctor-match.html');
     }
     document.getElementById('step1')?.classList.add('active');
     document.getElementById('step2')?.classList.add('active');

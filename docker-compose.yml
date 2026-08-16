@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: teletriage-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: teletriage
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d teletriage"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  triage-engine:
+    build: ./triage-engine
+    container_name: teletriage-triage
+    restart: unless-stopped
+    ports:
+      - "6000:6000"
+
+  backend:
+    build: .
+    container_name: teletriage-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      triage-engine:
+        condition: service_started
+    environment:
+      PORT: 5000
+      APP_BASE_URL: http://localhost:5000
+      FRONTEND_ORIGIN: http://localhost:5000
+      JWT_SECRET: docker-dev-secret-change-in-production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: teletriage
+      TRIAGE_SERVICE_URL: http://triage-engine:6000
+      CONSULTATION_FEE: 100
+
+volumes:
+  pgdata:
