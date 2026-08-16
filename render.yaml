@@ -30,8 +30,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install
-    preDeployCommand: node scripts/render-seed.js
-    startCommand: npm start
+    startCommand: node src/start-production.js
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
