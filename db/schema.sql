@@ -57,11 +57,14 @@ CREATE TABLE IF NOT EXISTS queue_entries (
     patient_id          INT NOT NULL REFERENCES patients(patient_id),
     submission_id       INT NOT NULL REFERENCES symptom_submissions(submission_id),
     triage_id           INT NOT NULL REFERENCES triage_results(triage_id),
+    duration_minutes    INT NOT NULL DEFAULT 10 CHECK (duration_minutes BETWEEN 10 AND 60),
     status              VARCHAR(20) NOT NULL DEFAULT 'Queued',
     assigned_doctor_id  INT NULL REFERENCES doctors(doctor_id),
     created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE queue_entries ADD COLUMN IF NOT EXISTS duration_minutes INT NOT NULL DEFAULT 10;
 
 CREATE TABLE IF NOT EXISTS payments (
     payment_id           SERIAL PRIMARY KEY,
@@ -70,6 +73,7 @@ CREATE TABLE IF NOT EXISTS payments (
     bkash_payment_id     VARCHAR(100),
     bkash_transaction_id VARCHAR(100),
     payment_method       VARCHAR(20) NOT NULL DEFAULT 'bKash',
+    duration_minutes     INT NOT NULL DEFAULT 10 CHECK (duration_minutes BETWEEN 10 AND 60),
     amount               DECIMAL(10, 2) NOT NULL DEFAULT 50.00,
     status               VARCHAR(20) NOT NULL DEFAULT 'Pending',
     paid_at              TIMESTAMP NULL,
@@ -77,6 +81,32 @@ CREATE TABLE IF NOT EXISTS payments (
 );
 
 ALTER TABLE payments ADD COLUMN IF NOT EXISTS payment_method VARCHAR(20) NOT NULL DEFAULT 'bKash';
+ALTER TABLE payments ADD COLUMN IF NOT EXISTS duration_minutes INT NOT NULL DEFAULT 10;
+
+CREATE TABLE IF NOT EXISTS refunds (
+    refund_id        SERIAL PRIMARY KEY,
+    payment_id       INT NOT NULL REFERENCES payments(payment_id),
+    patient_id       INT NOT NULL REFERENCES patients(patient_id),
+    queue_id         INT NULL REFERENCES queue_entries(queue_id),
+    refund_amount    DECIMAL(10, 2) NOT NULL,
+    gateway          VARCHAR(20) NOT NULL,
+    refund_trx_id    VARCHAR(100),
+    status           VARCHAR(20) NOT NULL DEFAULT 'Pending',
+    reason           VARCHAR(255) DEFAULT 'Patient cancelled before consultation started',
+    requested_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    processed_at     TIMESTAMP NULL
+);
+
+CREATE TABLE IF NOT EXISTS doctor_interest_requests (
+    request_id       SERIAL PRIMARY KEY,
+    full_name        VARCHAR(120) NOT NULL,
+    email            VARCHAR(120) NOT NULL,
+    phone            VARCHAR(20) NOT NULL,
+    specialty        VARCHAR(80) NOT NULL,
+    registration_no  VARCHAR(60),
+    message          TEXT,
+    created_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE IF NOT EXISTS case_archive (
     archive_id    SERIAL PRIMARY KEY,

@@ -133,12 +133,16 @@
             </div>
           </div>
 
-          <!-- Updated Action Button (No Video Camera) -->
-          <div class="mt-4">
+          <!-- Updated Action Buttons -->
+          <div class="mt-4 d-flex flex-wrap gap-2">
             <button id="enterRoomBtn" class="btn btn-light rounded-pill px-4 py-2 fw-bold text-teal-800 shadow-sm" style="color: #187d85;">
               <i class="bi bi-info-circle-fill me-2"></i> View Consultation Status
             </button>
+            <button id="cancelConsultBtn" class="btn btn-outline-light rounded-pill px-4 py-2 fw-bold d-none">
+              <i class="bi bi-x-circle me-2"></i> Cancel &amp; Request Refund
+            </button>
           </div>
+          <p class="small text-white-50 mt-2 mb-0" id="cancelHint">Refund available only while waiting in queue.</p>
         </div>
 
         <!-- Metric Info Cards (3 Columns) -->
@@ -169,7 +173,8 @@
           <div class="col-md-4">
             <div class="bg-white p-4 rounded-4 shadow-sm border border-slate-100 h-100 text-center">
               <small class="text-muted fw-semibold">Payment Status</small>
-              <h3 class="fs-3 fw-bold text-slate-800 mt-1 mb-2">BDT 50</h3>
+              <h3 class="fs-3 fw-bold text-slate-800 mt-1 mb-2" id="dashPaymentAmount">—</h3>
+              <small class="text-slate-500 d-block mb-1" id="dashConsultDuration">—</small>
               <span class="badge bg-emerald-100 text-emerald-700 px-3 py-2 rounded-pill fw-medium" id="dashPaymentBadge">
                 <i class="bi bi-shield-check me-1"></i> Payment Verified (SSLCommerz)
               </span>

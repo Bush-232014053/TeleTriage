@@ -1,9 +1,12 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const submissionId = sessionStorage.getItem('teletriage_submission_id');
-  const fee = Number(sessionStorage.getItem('teletriage_fee') || 100);
+  const durationSelect = document.getElementById('consultationDuration');
+  let feePer10 = 100;
 
-  if (document.getElementById('summaryFee')) {
-    document.getElementById('summaryFee').textContent = `${fee} BDT`;
+  const savedDuration = sessionStorage.getItem('teletriage_consultation_duration') || '10';
+  if (durationSelect) {
+    durationSelect.value = savedDuration;
+    durationSelect.addEventListener('change', updatePricingDisplay);
   }
 
   const user = JSON.parse(sessionStorage.getItem('teletriage_user') || 'null');
@@ -11,13 +14,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('sidebarUserName').textContent = user.full_name || user.fullName || 'Patient';
   }
 
-  // Show sandbox badges
   try {
     const gateways = await fetch(`${window.location.origin}/api/payments/gateways`).then((r) => r.json());
+    feePer10 = gateways.pricing?.feePer10Min || gateways.consultationFee || 100;
     renderSandboxInfo(gateways);
   } catch {
-    /* optional UI */
+    /* optional */
   }
+
+  updatePricingDisplay();
 
   const payBtn = document.getElementById('paySSLBtn') || document.getElementById('payNowBtn');
   if (!payBtn) return;
@@ -35,16 +40,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
+    const durationMinutes = Number(durationSelect?.value || 10);
+    const fee = (durationMinutes / 10) * feePer10;
     const gateway = document.querySelector('input[name="paymentGateway"]:checked')?.value || 'SSLCommerz';
+
+    sessionStorage.setItem('teletriage_consultation_duration', String(durationMinutes));
+    sessionStorage.setItem('teletriage_fee', String(fee));
 
     this.disabled = true;
     this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting to payment gateway...';
+
+    const payload = { submissionId: Number(submissionId), durationMinutes, amount: fee };
 
     try {
       if (gateway === 'bKash') {
         const data = await TeleTriageAPI.request('/api/payments/initiate', {
           method: 'POST',
-          body: JSON.stringify({ submissionId: Number(submissionId) }),
+          body: JSON.stringify(payload),
         });
         sessionStorage.setItem('teletriage_pending_payment_id', data.paymentID);
         sessionStorage.setItem('teletriage_payment_gateway', 'bKash');
@@ -57,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const data = await TeleTriageAPI.request('/api/payments/initiate-sslcommerz', {
         method: 'POST',
-        body: JSON.stringify({ submissionId: Number(submissionId), amount: fee }),
+        body: JSON.stringify(payload),
       });
 
       sessionStorage.setItem('teletriage_pending_tran_id', data.tranId);
@@ -75,6 +87,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       this.innerText = 'Pay Now & Confirm Booking';
     }
   });
+
+  function updatePricingDisplay() {
+    const durationMinutes = Number(durationSelect?.value || 10);
+    const fee = (durationMinutes / 10) * feePer10;
+    if (document.getElementById('summaryDuration')) {
+      document.getElementById('summaryDuration').textContent = `${durationMinutes} mins`;
+    }
+    if (document.getElementById('summaryFee')) {
+      document.getElementById('summaryFee').textContent = `${fee} BDT`;
+    }
+  }
 });
 
 function renderSandboxInfo(gateways) {
@@ -83,13 +106,15 @@ function renderSandboxInfo(gateways) {
 
   const bkash = gateways.bkash || {};
   const ssl = gateways.sslcommerz || {};
+  const refund = gateways.refundPolicy?.description || '';
 
   container.innerHTML = `
     <div class="alert alert-info py-2 small mb-3">
-      <strong>Sandbox mode</strong> — test payments only, no real money.
+      <strong>Sandbox mode</strong> — test payments only.
       <ul class="mb-0 mt-2">
-        <li><strong>bKash direct:</strong> wallet <code>01929918378</code>, PIN <code>12121</code>, OTP <code>123456</code></li>
-        <li><strong>SSLCommerz:</strong> store <code>${ssl.storeId || 'testbox'}</code> (${ssl.mode || 'sandbox'}) — pick bKash/Nagad/card on their page</li>
+        <li><strong>bKash:</strong> wallet <code>01929918378</code>, PIN <code>12121</code>, OTP <code>123456</code></li>
+        <li><strong>SSLCommerz:</strong> store <code>${ssl.storeId || 'testbox'}</code></li>
+        <li><strong>Refund:</strong> ${refund}</li>
       </ul>
     </div>`;
 }

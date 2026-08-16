@@ -26,6 +26,7 @@ const authRoutes = require('./routes/authRoutes');
 const patientRoutes = require('./routes/patientRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const publicRoutes = require('./routes/publicRoutes');
 let adminRoutes;
 try {
   adminRoutes = require('./routes/adminRoutes');
@@ -66,6 +67,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/public', publicRoutes);
 app.use('/api/admin', adminRoutes);
 
 // 404 for unmatched API routes

@@ -8,7 +8,9 @@ function errorHandler(err, req, res, next) {
   }
 
   const status = err.statusCode || 500;
-  res.status(status).json({ error: err.message || 'Internal server error.' });
+  const body = { error: err.message || 'Internal server error.' };
+  if (err.data) Object.assign(body, err.data);
+  res.status(status).json(body);
 }
 
 module.exports = errorHandler;

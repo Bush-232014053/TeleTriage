@@ -21,11 +21,11 @@ async function getOrderedQueue({ specialty = null } = {}) {
   const { rows } = await pool.query(
     `SELECT
         q.queue_id, q.patient_id, q.submission_id, q.triage_id, q.status,
-        q.created_at,
+        q.duration_minutes, q.created_at,
         p.full_name AS patient_name,
         tr.severity_score, tr.urgency_label, tr.assigned_specialty,
-        s.chief_complaint, s.pain_level, s.body_location,
-        pay.status AS payment_status,
+        s.chief_complaint, s.pain_level, s.body_location, s.duration AS symptom_duration,
+        pay.status AS payment_status, pay.amount AS payment_amount, pay.payment_method,
         doc.full_name AS assigned_doctor_name, doc.specialty AS assigned_doctor_specialty
      FROM queue_entries q
      JOIN triage_results tr        ON tr.triage_id = q.triage_id
@@ -33,21 +33,26 @@ async function getOrderedQueue({ specialty = null } = {}) {
      JOIN patients p               ON p.patient_id = q.patient_id
      LEFT JOIN payments pay        ON pay.submission_id = q.submission_id
      LEFT JOIN doctors doc         ON doc.doctor_id = q.assigned_doctor_id
-     WHERE q.status != 'Completed'
+     WHERE q.status NOT IN ('Completed', 'Cancelled')
      ${specialtyFilter}
      ORDER BY tr.severity_score ASC, q.created_at ASC`,
     params
   );
 
-  return rows.map((row, index) => ({
+  return rows.map((row, index) => {
+    const waitMins = rows
+      .slice(0, index)
+      .reduce((sum, r) => sum + (r.duration_minutes || MINUTES_PER_CASE), 0);
+
+    return {
     queueId: row.queue_id,
     position: index + 1,
     patientId: row.patient_id,
-    // Anonymized per FR-22: doctors see a Patient ID, not the raw name.
     patientDisplayId: `P-${String(row.patient_id).padStart(4, '0')}`,
     submissionId: row.submission_id,
     triageId: row.triage_id,
     status: row.status,
+    durationMinutes: row.duration_minutes || MINUTES_PER_CASE,
     severityScore: row.severity_score,
     urgencyLabel: row.urgency_label,
     specialty: row.assigned_specialty,
@@ -55,13 +60,15 @@ async function getOrderedQueue({ specialty = null } = {}) {
     painLevel: row.pain_level,
     bodyLocation: row.body_location,
     paymentStatus: row.payment_status || 'Pending',
+    paymentAmount: row.payment_amount ? Number(row.payment_amount) : null,
+    paymentMethod: row.payment_method,
     createdAt: row.created_at,
-    estimatedWaitMins: index * MINUTES_PER_CASE, // cases ahead * 10 mins
-    // Filled in once a doctor has opened/updated the case; null before that.
+    estimatedWaitMins: waitMins,
     assignedDoctor: row.assigned_doctor_name
       ? { name: row.assigned_doctor_name, specialty: row.assigned_doctor_specialty }
       : null,
-  }));
+  };
+  });
 }
 
 // Position + wait time for a single patient's active case (patient dashboard use).

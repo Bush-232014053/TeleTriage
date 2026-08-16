@@ -3,8 +3,9 @@ const pool = require('../config/db');
 const bkash = require('../services/bkashService');
 const sslcommerz = require('../services/sslcommerzService');
 const { broadcastQueueUpdate, notifyPatient } = require('../sockets/socketHandlers');
+const { calculateConsultationFee, normalizeDurationMinutes, pricingInfo } = require('../utils/pricing');
 
-const FEE = Number(process.env.CONSULTATION_FEE || 100);
+const DEFAULT_FEE = Number(process.env.CONSULTATION_FEE || 100);
 const BASE_URL = process.env.APP_BASE_URL || 'http://localhost:5000';
 
 async function getPatientContact(patientId) {
@@ -39,11 +40,13 @@ async function createQueueEntryIfNeeded(payment) {
   const triage = triageRows[0];
   if (!triage) return null;
 
+  const durationMinutes = payment.duration_minutes || 10;
+
   const { rows: queueRows } = await pool.query(
-    `INSERT INTO queue_entries (patient_id, submission_id, triage_id, status)
-     VALUES ($1, $2, $3, 'Queued')
+    `INSERT INTO queue_entries (patient_id, submission_id, triage_id, duration_minutes, status)
+     VALUES ($1, $2, $3, $4, 'Queued')
      RETURNING queue_id`,
-    [payment.patient_id, payment.submission_id, triage.triage_id]
+    [payment.patient_id, payment.submission_id, triage.triage_id, durationMinutes]
   );
 
   await broadcastQueueUpdate(triage.assigned_specialty);
@@ -68,7 +71,7 @@ async function markPaymentSuccess(payment, transactionId) {
   return { payment, success: true, queueId };
 }
 
-async function upsertPendingPayment({ patientId, submissionId, gatewayRef, amount, method }) {
+async function upsertPendingPayment({ patientId, submissionId, gatewayRef, amount, method, durationMinutes }) {
   const { rows: existing } = await pool.query(
     'SELECT * FROM payments WHERE submission_id = $1',
     [submissionId]
@@ -83,17 +86,17 @@ async function upsertPendingPayment({ patientId, submissionId, gatewayRef, amoun
   if (existing.length > 0) {
     await pool.query(
       `UPDATE payments
-       SET bkash_payment_id = $1, status = 'Pending', amount = $2, payment_method = $3
-       WHERE submission_id = $4`,
-      [gatewayRef, amount, method, submissionId]
+       SET bkash_payment_id = $1, status = 'Pending', amount = $2, payment_method = $3, duration_minutes = $4
+       WHERE submission_id = $5`,
+      [gatewayRef, amount, method, durationMinutes, submissionId]
     );
     return existing[0];
   }
 
   await pool.query(
-    `INSERT INTO payments (patient_id, submission_id, bkash_payment_id, amount, status, payment_method)
-     VALUES ($1, $2, $3, $4, 'Pending', $5)`,
-    [patientId, submissionId, gatewayRef, amount, method]
+    `INSERT INTO payments (patient_id, submission_id, bkash_payment_id, amount, status, payment_method, duration_minutes)
+     VALUES ($1, $2, $3, $4, 'Pending', $5, $6)`,
+    [patientId, submissionId, gatewayRef, amount, method, durationMinutes]
   );
   return findPaymentByGatewayRef(gatewayRef);
 }
@@ -101,50 +104,64 @@ async function upsertPendingPayment({ patientId, submissionId, gatewayRef, amoun
 // GET /api/payments/gateways — public sandbox/live status for the UI
 async function getGatewayStatus(req, res) {
   res.json({
-    consultationFee: FEE,
+    consultationFee: DEFAULT_FEE,
+    pricing: pricingInfo(),
+    refundPolicy: {
+      eligibleWhen: 'Queued',
+      description: 'Full refund if you cancel before a doctor starts reviewing your case.',
+    },
     bkash: bkash.sandboxInfo(),
     sslcommerz: sslcommerz.sandboxInfo(),
   });
 }
 
-// POST /api/payments/initiate  { submissionId }  — bKash direct
+function resolvePaymentDetails(body) {
+  const durationMinutes = normalizeDurationMinutes(body.durationMinutes || 10);
+  const amount = body.amount ? Number(body.amount) : calculateConsultationFee(durationMinutes);
+  return { durationMinutes, amount };
+}
+
+// POST /api/payments/initiate  { submissionId, durationMinutes? }
 async function initiatePayment(req, res) {
   const patientId = req.user.id;
   const { submissionId } = req.body;
   if (!submissionId) return res.status(400).json({ error: 'submissionId is required.' });
 
+  const { durationMinutes, amount } = resolvePaymentDetails(req.body);
   const invoiceNumber = `TT-BK-${submissionId}-${Date.now()}`;
-  const bkashResponse = await bkash.createPayment({ amount: FEE, invoiceNumber });
+  const bkashResponse = await bkash.createPayment({ amount, invoiceNumber });
 
   await upsertPendingPayment({
     patientId,
     submissionId,
     gatewayRef: bkashResponse.paymentID,
-    amount: FEE,
+    amount,
     method: 'bKash',
+    durationMinutes,
   });
 
   res.json({
     gateway: 'bKash',
     paymentID: bkashResponse.paymentID,
     bkashURL: bkashResponse.bkashURL,
-    amount: FEE,
+    amount,
+    durationMinutes,
     mode: bkash.sandboxInfo().mode,
   });
 }
 
-// POST /api/payments/initiate-sslcommerz  { submissionId, amount? }
+// POST /api/payments/initiate-sslcommerz  { submissionId, durationMinutes?, amount? }
 async function initiateSslcommerz(req, res) {
   const patientId = req.user.id;
-  const { submissionId, amount } = req.body;
+  const { submissionId } = req.body;
   if (!submissionId) return res.status(400).json({ error: 'submissionId is required.' });
 
-  const fee = Number(amount || FEE);
+  const { durationMinutes, amount } = resolvePaymentDetails(req.body);
   const tranId = `TT-SSL-${submissionId}-${Date.now()}`;
   const patient = await getPatientContact(patientId);
 
   const session = await sslcommerz.createSession({
-    amount: fee,
+    amount,
     tranId,
     customer: {
       name: patient.full_name,
@@ -163,8 +180,9 @@ async function initiateSslcommerz(req, res) {
     patientId,
     submissionId,
     gatewayRef: tranId,
-    amount: fee,
+    amount,
     method: 'SSLCommerz',
+    durationMinutes,
   });
 
   res.json({
@@ -172,7 +190,8 @@ async function initiateSslcommerz(req, res) {
     GatewayPageURL: session.GatewayPageURL,
     tranId,
     sessionkey: session.sessionkey,
-    amount: fee,
+    amount,
+    durationMinutes,
     mode: sslcommerz.sandboxInfo().mode,
   });
 }
@@ -250,11 +269,12 @@ async function bkashReturn(req, res) {
     const result = await finalizeBkashPayment(paymentID, executeResult);
 
     if (result?.success) {
+      const paidAmount = result.payment?.amount || executeResult.amount || DEFAULT_FEE;
       const params = new URLSearchParams({
         gateway: 'bKash',
         paymentID,
         trxID: executeResult.trxID || '',
-        amount: executeResult.amount || FEE,
+        amount: paidAmount,
       });
       return res.redirect(`/payment-success.html?${params.toString()}`);
     }
@@ -305,7 +325,7 @@ async function handleSslReturn(req, res, outcome) {
         gateway: 'SSLCommerz',
         tran_id: tranId,
         trxID: validation.bank_tran_id || validation.tran_id || '',
-        amount: validation.amount || validation.currency_amount || FEE,
+        amount: validation.amount || validation.currency_amount || DEFAULT_FEE,
       });
       return res.redirect(`/payment-success.html?${params.toString()}`);
     }

@@ -9,6 +9,7 @@ const {
   getMyHistory,
   getMyProfile,
   getRecommendedDoctors,
+  cancelConsultation,
 } = require('../controllers/patientController');
 
 // Every route below requires a valid patient JWT.
@@ -26,5 +27,7 @@ router.get('/triage/:submissionId/doctors', asyncHandler(getRecommendedDoctors))
 router.get('/me/status', asyncHandler(getMyStatus));
 // GET  /api/patients/me/history                — this patient's past completed cases
 router.get('/me/history', asyncHandler(getMyHistory));
+// POST /api/patients/me/cancel-consultation    — cancel + refund while Queued
+router.post('/me/cancel-consultation', asyncHandler(cancelConsultation));
 
 module.exports = router;

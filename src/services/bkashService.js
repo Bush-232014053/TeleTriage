@@ -135,11 +135,30 @@ async function queryPaymentStatus(paymentID) {
   }, 'payment status query');
 }
 
+async function refundPayment({ paymentID, amount, trxID, reason }) {
+  const token = await getAuthToken();
+  return callBkash(async () => {
+    const { data } = await axios.post(
+      `${BASE_URL}/tokenized/checkout/payment/refund`,
+      {
+        paymentID,
+        amount,
+        trxID,
+        sku: 'consultation',
+        reason: reason || 'Patient cancelled consultation',
+      },
+      { headers: authHeaders(token) }
+    );
+    return data;
+  }, 'refund payment');
+}
+
 module.exports = {
   getAuthToken,
   createPayment,
   executePayment,
   queryPaymentStatus,
+  refundPayment,
   isConfigured,
   sandboxInfo,
 };

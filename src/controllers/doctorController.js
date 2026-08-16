@@ -145,11 +145,11 @@ async function getMyStats(req, res) {
 
   const { rows } = await pool.query(
     `SELECT
-        COUNT(*) FILTER (WHERE tr.severity_score = 1 AND q.status != 'Completed')                    AS critical_count,
-        COUNT(*) FILTER (WHERE tr.severity_score = 2 AND q.status != 'Completed')                    AS urgent_count,
-        COUNT(*) FILTER (WHERE tr.severity_score >= 3 AND q.status != 'Completed')                   AS moderate_or_low_count,
+        COUNT(*) FILTER (WHERE tr.severity_score = 1 AND q.status NOT IN ('Completed', 'Cancelled'))                    AS critical_count,
+        COUNT(*) FILTER (WHERE tr.severity_score = 2 AND q.status NOT IN ('Completed', 'Cancelled'))                    AS urgent_count,
+        COUNT(*) FILTER (WHERE tr.severity_score >= 3 AND q.status NOT IN ('Completed', 'Cancelled'))                   AS moderate_or_low_count,
         COUNT(*) FILTER (WHERE q.status = 'Consulting')                                               AS consulting_count,
-        COUNT(*) FILTER (WHERE q.status != 'Completed')                                              AS active_count
+        COUNT(*) FILTER (WHERE q.status NOT IN ('Completed', 'Cancelled'))                                              AS active_count
      FROM queue_entries q
      JOIN triage_results tr ON tr.triage_id = q.triage_id
      WHERE tr.assigned_specialty = $1`,

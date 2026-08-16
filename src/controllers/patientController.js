@@ -3,6 +3,7 @@
 const pool = require('../config/db');
 const { getTriageScore } = require('../services/triageService');
 const { getQueueInfoForPatient } = require('../services/queueService');
+const { cancelConsultationAndRefund } = require('../services/refundService');
 
 // POST /api/patients/symptoms  (FR-07 .. FR-15)
 async function submitSymptoms(req, res) {
@@ -102,17 +103,21 @@ async function getMyStatus(req, res) {
     return res.json({
       hasActiveCase: true,
       caseId: queueInfo.queueId,
-      status: queueInfo.status, // Queued | Under Review | Consulting | Completed
+      status: queueInfo.status,
       queuePosition: queueInfo.position,
       estimatedWaitMins: queueInfo.estimatedWaitMins,
+      durationMinutes: queueInfo.durationMinutes,
       severityScore: queueInfo.severityScore,
       urgencyLabel: queueInfo.urgencyLabel,
       specialty: queueInfo.specialty,
+      chiefComplaint: queueInfo.chiefComplaint,
       paymentStatus: queueInfo.paymentStatus,
-      // FR-31: patient sees a "doctor is ready" indicator when status flips to Consulting
+      paymentAmount: queueInfo.paymentAmount,
+      paymentMethod: queueInfo.paymentMethod,
       doctorReady: queueInfo.status === 'Consulting',
-      // null until a doctor has opened/updated the case at least once
       assignedDoctor: queueInfo.assignedDoctor,
+      canRequestRefund: queueInfo.status === 'Queued' && queueInfo.paymentStatus === 'Success',
+      refundPolicy: 'Full refund available only while status is Queued (before doctor review starts).',
     });
   }
 
@@ -237,6 +242,12 @@ async function getRecommendedDoctors(req, res) {
   });
 }
 
+// POST /api/patients/me/cancel-consultation — refund if still Queued
+async function cancelConsultation(req, res) {
+  const result = await cancelConsultationAndRefund(req.user.id, req.body.reason);
+  res.json(result);
+}
+
 module.exports = {
   submitSymptoms,
   getTriageResult,
@@ -244,4 +255,5 @@ module.exports = {
   getMyHistory,
   getMyProfile,
   getRecommendedDoctors,
+  cancelConsultation,
 };
