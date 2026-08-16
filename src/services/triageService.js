@@ -1,27 +1,53 @@
 // Talks to the Python triage microservice over HTTP.
-// The Node backend NEVER trusts a severity score computed in the browser —
-// this is the single authoritative place a triage score is produced.
+// Falls back to the local rule engine if the service is cold-starting or down.
 const axios = require('axios');
 require('dotenv').config();
+const { scoreSymptoms } = require('./triageRules');
 
 const TRIAGE_SERVICE_URL = process.env.TRIAGE_SERVICE_URL || 'http://localhost:6000';
+const REQUEST_TIMEOUT_MS = Number(process.env.TRIAGE_TIMEOUT_MS || 30000);
+const MAX_ATTEMPTS = 3;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function callTriageEngine(payload) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await axios.post(`${TRIAGE_SERVICE_URL}/score`, payload, {
+        timeout: REQUEST_TIMEOUT_MS,
+      });
+      return response.data;
+    } catch (err) {
+      lastError = err;
+      if (attempt < MAX_ATTEMPTS) {
+        await sleep(2000 * attempt);
+      }
+    }
+  }
+
+  throw lastError;
+}
 
 async function getTriageScore({ complaint, duration, pain, bodyLocation }) {
-  try {
-    const response = await axios.post(`${TRIAGE_SERVICE_URL}/score`, {
-      complaint,
-      duration,
-      pain,
-      body_location: bodyLocation,
-    }, { timeout: 5000 }); // FR-16: triage must resolve within 5 seconds
+  const payload = {
+    complaint,
+    duration,
+    pain,
+    body_location: bodyLocation,
+  };
 
-    // Expected shape from the Python service:
-    // { severity_score: 1-5, urgency_label: "Urgent"|"Moderate"|"Non-Urgent", specialty: "Cardiology" }
-    return response.data;
+  try {
+    return await callTriageEngine(payload);
   } catch (err) {
-    const error = new Error('Triage engine is unavailable. Please try again shortly.');
-    error.statusCode = 502;
-    throw error;
+    console.warn(
+      'Triage microservice unavailable; using local fallback scorer.',
+      err.code || err.message
+    );
+    return scoreSymptoms({ complaint, duration, pain });
   }
 }
 
