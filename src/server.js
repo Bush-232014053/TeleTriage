@@ -37,6 +37,9 @@ try {
 const app = express();
 const server = http.createServer(app);
 
+// Render (and other reverse proxies) sit in front of the app.
+app.set('trust proxy', 1);
+
 // Socket.IO — same-origin as the REST API, CORS restricted to the frontend.
 const io = new Server(server, {
   cors: { origin: process.env.FRONTEND_ORIGIN || '*', methods: ['GET', 'POST'] },
@@ -85,6 +88,11 @@ const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || '0.0.0.0';
 server.listen(PORT, HOST, () => {
   console.log(`TeleTriage backend listening on http://${HOST}:${PORT}`);
+});
+
+server.on('error', (err) => {
+  console.error('Server failed to start:', err);
+  process.exit(1);
 });
 
 module.exports = { app, server, io };
