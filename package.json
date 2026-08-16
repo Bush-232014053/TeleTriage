@@ -1,0 +1,28 @@
+{
+  "name": "teletriage-backend",
+  "version": "1.0.0",
+  "description": "TeleTriage — Telemedicine Triage & Queue System backend (CSE 3200, Group 09, ULAB)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed": "node src/db/seed.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "express-rate-limit": "^7.2.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.23.3",
+    "pg": "^8.23.0",
+    "socket.io": "^4.7.5",
+    "sslcommerz-lts": "^1.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
