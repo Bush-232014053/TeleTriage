@@ -1,17 +1,57 @@
-// bKash Tokenized Checkout (Sandbox) integration.
-// Docs pattern: grant token -> create payment -> user approves on bKash's
-// page -> execute payment -> (webhook OR polling) confirms final status.
+// bKash Tokenized Checkout (Sandbox/Live) integration.
+// Sandbox docs: https://developer.bka.sh/docs/tokenized-checkout-overview
 const axios = require('axios');
 require('dotenv').config();
 
-const BASE_URL = process.env.BKASH_BASE_URL;
+const SANDBOX_DEFAULTS = {
+  baseUrl: 'https://tokenized.sandbox.bka.sh/v1.2.0-beta',
+  appKey: '4f6o0cjiki2rfm34kfdadl1eqq',
+  appSecret: '2is7hdktrekvrbljjh44ll3d9l1dtjo4pasmjvs5vl5qr3fug4b',
+  username: 'sandboxTokenizedUser02',
+  password: 'sandboxTokenizedUser02@12345',
+};
+
+const IS_SANDBOX = process.env.BKASH_SANDBOX !== 'false';
+const BASE_URL = process.env.BKASH_BASE_URL
+  || (IS_SANDBOX ? SANDBOX_DEFAULTS.baseUrl : 'https://tokenized.pay.bka.sh/v1.2.0-beta');
+
+function cred(name, sandboxFallback) {
+  const value = process.env[name];
+  if (value) return value;
+  return IS_SANDBOX ? sandboxFallback : '';
+}
+
+const APP_KEY = cred('BKASH_APP_KEY', SANDBOX_DEFAULTS.appKey);
+const APP_SECRET = cred('BKASH_APP_SECRET', SANDBOX_DEFAULTS.appSecret);
+const USERNAME = cred('BKASH_USERNAME', SANDBOX_DEFAULTS.username);
+const PASSWORD = cred('BKASH_PASSWORD', SANDBOX_DEFAULTS.password);
+const CALLBACK_URL = process.env.BKASH_CALLBACK_URL
+  || `${process.env.APP_BASE_URL || 'http://localhost:5000'}/api/payments/bkash/return`;
 
 let cachedToken = null;
 let tokenExpiresAt = 0;
 
-// Wraps any bKash call so a network/API failure becomes a clean 502 instead
-// of a raw axios error message leaking to the client.
+function isConfigured() {
+  return Boolean(APP_KEY && APP_SECRET && USERNAME && PASSWORD && BASE_URL);
+}
+
+function sandboxInfo() {
+  return {
+    configured: isConfigured(),
+    mode: IS_SANDBOX ? 'sandbox' : 'live',
+    baseUrl: BASE_URL,
+    callbackUrl: CALLBACK_URL,
+    testWallet: IS_SANDBOX ? '01929918378 (PIN: 12121, OTP: 123456)' : null,
+  };
+}
+
 async function callBkash(fn, actionLabel) {
+  if (!isConfigured()) {
+    const error = new Error('bKash is not configured. Set BKASH_APP_KEY, BKASH_APP_SECRET, BKASH_USERNAME, and BKASH_PASSWORD.');
+    error.statusCode = 502;
+    throw error;
+  }
+
   try {
     return await fn();
   } catch (err) {
@@ -22,28 +62,22 @@ async function callBkash(fn, actionLabel) {
   }
 }
 
-// Step 1: grant token. bKash sandbox tokens are short-lived, so we cache
-// and re-fetch only when expired instead of on every request.
 async function getAuthToken() {
   if (cachedToken && Date.now() < tokenExpiresAt) return cachedToken;
 
   return callBkash(async () => {
     const { data } = await axios.post(
       `${BASE_URL}/tokenized/checkout/token/grant`,
-      {
-        app_key: process.env.BKASH_APP_KEY,
-        app_secret: process.env.BKASH_APP_SECRET,
-      },
+      { app_key: APP_KEY, app_secret: APP_SECRET },
       {
         headers: {
-          username: process.env.BKASH_USERNAME,
-          password: process.env.BKASH_PASSWORD,
+          username: USERNAME,
+          password: PASSWORD,
           'Content-Type': 'application/json',
         },
       }
     );
     cachedToken = data.id_token;
-    // expires_in is in seconds; refresh a little early to be safe
     tokenExpiresAt = Date.now() + (Number(data.expires_in || 3300) - 60) * 1000;
     return cachedToken;
   }, 'token grant');
@@ -52,22 +86,20 @@ async function getAuthToken() {
 function authHeaders(token) {
   return {
     Authorization: token,
-    'X-App-Key': process.env.BKASH_APP_KEY,
+    'X-App-Key': APP_KEY,
     'Content-Type': 'application/json',
   };
 }
 
-// Step 2: create a payment. Returns { paymentID, bkashURL } that the
-// frontend redirects the patient to for approval.
 async function createPayment({ amount, invoiceNumber }) {
   const token = await getAuthToken();
   return callBkash(async () => {
     const { data } = await axios.post(
       `${BASE_URL}/tokenized/checkout/create`,
       {
-        mode: '0011', // checkout (URL based) mode
+        mode: '0011',
         payerReference: invoiceNumber,
-        callbackURL: process.env.BKASH_CALLBACK_URL,
+        callbackURL: CALLBACK_URL,
         amount: String(amount),
         currency: 'BDT',
         intent: 'sale',
@@ -75,11 +107,10 @@ async function createPayment({ amount, invoiceNumber }) {
       },
       { headers: authHeaders(token) }
     );
-    return data; // includes paymentID, bkashURL, successCallbackURL, etc.
+    return data;
   }, 'create payment');
 }
 
-// Step 3: execute payment after the patient approves it on bKash's page.
 async function executePayment(paymentID) {
   const token = await getAuthToken();
   return callBkash(async () => {
@@ -88,13 +119,10 @@ async function executePayment(paymentID) {
       { paymentID },
       { headers: authHeaders(token) }
     );
-    return data; // includes transactionStatus, trxID, amount, paymentID
+    return data;
   }, 'execute payment');
 }
 
-// Fallback polling: query bKash directly for the current status of a
-// paymentID. Used when the webhook callback is delayed, dropped, or the
-// client wants to actively re-check ("Check payment status" button).
 async function queryPaymentStatus(paymentID) {
   const token = await getAuthToken();
   return callBkash(async () => {
@@ -107,4 +135,11 @@ async function queryPaymentStatus(paymentID) {
   }, 'payment status query');
 }
 
-module.exports = { getAuthToken, createPayment, executePayment, queryPaymentStatus };
+module.exports = {
+  getAuthToken,
+  createPayment,
+  executePayment,
+  queryPaymentStatus,
+  isConfigured,
+  sandboxInfo,
+};

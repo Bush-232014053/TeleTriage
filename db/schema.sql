@@ -69,11 +69,14 @@ CREATE TABLE IF NOT EXISTS payments (
     submission_id        INT NOT NULL UNIQUE REFERENCES symptom_submissions(submission_id),
     bkash_payment_id     VARCHAR(100),
     bkash_transaction_id VARCHAR(100),
+    payment_method       VARCHAR(20) NOT NULL DEFAULT 'bKash',
     amount               DECIMAL(10, 2) NOT NULL DEFAULT 50.00,
     status               VARCHAR(20) NOT NULL DEFAULT 'Pending',
     paid_at              TIMESTAMP NULL,
     created_at           TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE payments ADD COLUMN IF NOT EXISTS payment_method VARCHAR(20) NOT NULL DEFAULT 'bKash';
 
 CREATE TABLE IF NOT EXISTS case_archive (
     archive_id    SERIAL PRIMARY KEY,

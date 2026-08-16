@@ -97,23 +97,23 @@
           <div class="text-start bg-slate-50 p-4 rounded-3 mb-4 space-y-2 border border-slate-100">
             <div class="d-flex justify-content-between">
               <span class="text-teal-700 fw-semibold small">Transaction ID:</span>
-              <span class="fw-bold text-slate-700 small">#TXN-2026-8809</span>
+              <span class="fw-bold text-slate-700 small" id="receiptTxnId">—</span>
             </div>
             <div class="d-flex justify-content-between">
               <span class="text-teal-700 fw-semibold small">Gateway:</span>
-              <span class="fw-bold text-slate-700 small">SSL Commerz</span>
+              <span class="fw-bold text-slate-700 small" id="receiptGateway">—</span>
             </div>
             <div class="d-flex justify-content-between">
               <span class="text-teal-700 fw-semibold small">Amount Paid:</span>
-              <span class="fw-bold text-slate-700 small">50 BDT</span>
+              <span class="fw-bold text-slate-700 small" id="receiptAmount">—</span>
             </div>
             <div class="d-flex justify-content-between">
               <span class="text-teal-700 fw-semibold small">Date & Time:</span>
-              <span class="fw-bold text-slate-700 small">August 3, 2026 | 12:00 PM</span>
+              <span class="fw-bold text-slate-700 small" id="receiptDate">—</span>
             </div>
             <div class="d-flex justify-content-between">
               <span class="text-teal-700 fw-semibold small">Routing Type:</span>
-              <span class="fw-bold text-slate-700 small">Fixed Appointment Slot</span>
+              <span class="fw-bold text-slate-700 small" id="receiptRouting">Live Priority Queue</span>
             </div>
           </div>
 
@@ -135,10 +135,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    document.getElementById('langToggle')?.addEventListener('click', function () {
-      this.textContent = this.textContent.trim().startsWith('EN') ? 'বাং | EN' : 'EN | বাং';
-    });
-  </script>
+  <script src="js/payment-success.js"></script>
 </body>
 </html>
