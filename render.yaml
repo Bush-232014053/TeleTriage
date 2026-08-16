@@ -32,6 +32,7 @@ services:
     buildCommand: npm install
     startCommand: node src/start-production.js
     healthCheckPath: /health
+    autoDeploy: true
     envVars:
       - key: NODE_VERSION
         value: "22.12.0"

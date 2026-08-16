@@ -5,9 +5,13 @@ function buildPoolConfig() {
   const url = process.env.DATABASE_URL;
   const placeholder = /your_.*_here|changeme|replace_me/i;
   if (url && !placeholder.test(url)) {
+    const useSsl =
+      process.env.PGSSL === 'true'
+      || /sslmode=require/i.test(url)
+      || /\.render\.com/i.test(url);
     return {
       connectionString: url,
-      ssl: process.env.PGSSL === 'true' ? { rejectUnauthorized: false } : undefined,
+      ssl: useSsl ? { rejectUnauthorized: false } : undefined,
     };
   }
 
