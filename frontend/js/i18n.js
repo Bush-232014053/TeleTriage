@@ -43,16 +43,24 @@ const TeleTriageI18n = (() => {
     '3. Pay & Consult': '৩. পেমেন্ট ও পরামর্শ',
     'Pay via bKash / SSLCommerz': 'bKash / SSLCommerz দিয়ে পেমেন্ট',
 
-    // Symptom form
+    'Describe your chief symptom.....': 'আপনার প্রধান লক্ষণ লিখুন...',
+    'e.g., sudden, 1-3 days': 'যেমন: হঠাৎ, ১–৩ দিন',
+    'e.g., Chest, Back': 'যেমন: বুক, পিঠ',
+    'Any additional details or medical history......': 'অতিরিক্ত তথ্য বা রোগের ইতিহাস...',
     'Symptom Details': 'লক্ষণের বিবরণ',
+    'Symptom Submission': 'লক্ষণ জমা',
     'Chief Complaint:': 'প্রধান সমস্যা:',
-    'Describe your chief symptom…..': 'আপনার প্রধান লক্ষণ লিখুন...',
     'Duration:': 'কতদিন ধরে:',
     'Body Location:': 'শরীরের অংশ:',
     'Pain Level:': 'ব্যথার মাত্রা:',
     'Additional Notes:': 'অতিরিক্ত তথ্য:',
     'Save Draft': 'খসড়া সংরক্ষণ',
     Continue: 'এগিয়ে যান',
+    'Sudden / Less than 24h': 'হঠাৎ / ২৪ ঘণ্টার কম',
+    'Head / Neck': 'মাথা / ঘাড়',
+    'Chest / Back': 'বুক / পিঠ',
+    Abdomen: 'পেট',
+    'Arms / Legs': 'হাত / পা',
     'Submit Symptoms': 'লক্ষণ জমা দিন',
     Sudden: 'হঠাৎ',
     'Less than 24h': '২৪ ঘণ্টার কম',
@@ -294,6 +302,19 @@ const TeleTriageI18n = (() => {
       'doctorLogin.submit': 'Log In',
       'doctorLogin.joinPrompt2': 'New to TeleTriage? <a href="doctor-join.html" class="fw-bold brand-teal text-decoration-none">Apply to join as a doctor</a>',
       'welcome.patient': 'Welcome,',
+      'symptom.chiefComplaint.ph': 'Describe your chief symptom.....',
+      'symptom.duration.ph': 'e.g., sudden, 1-3 days',
+      'symptom.bodyLocation.ph': 'e.g., Chest, Back',
+      'symptom.notes.ph': 'Any additional details or medical history......',
+      'symptom.details': 'Symptom Details',
+      'symptom.chiefComplaint.label': 'Chief Complaint:',
+      'symptom.duration.label': 'Duration:',
+      'symptom.bodyLocation.label': 'Body Location:',
+      'symptom.painLevel.label': 'Pain Level:',
+      'symptom.notes.label': 'Additional Notes:',
+      'symptom.saveDraft': 'Save Draft',
+      'symptom.continue': 'Continue',
+      'symptom.submitting': 'Submitting...',
     },
     bn: {
       'page.home.title': 'TeleTriage — টেলিমেডিসিন ট্রায়াজ সিস্টেম',
@@ -336,6 +357,19 @@ const TeleTriageI18n = (() => {
       'doctorLogin.submit': 'লগ ইন',
       'doctorLogin.joinPrompt2': 'TeleTriage-এ নতুন? <a href="doctor-join.html" class="fw-bold brand-teal text-decoration-none">ডাক্তার হিসেবে যোগ দিন</a>',
       'welcome.patient': 'স্বাগতম,',
+      'symptom.chiefComplaint.ph': 'আপনার প্রধান লক্ষণ লিখুন...',
+      'symptom.duration.ph': 'যেমন: হঠাৎ, ১–৩ দিন',
+      'symptom.bodyLocation.ph': 'যেমন: বুক, পিঠ',
+      'symptom.notes.ph': 'অতিরিক্ত তথ্য বা রোগের ইতিহাস...',
+      'symptom.details': 'লক্ষণের বিবরণ',
+      'symptom.chiefComplaint.label': 'প্রধান সমস্যা:',
+      'symptom.duration.label': 'কতদিন ধরে:',
+      'symptom.bodyLocation.label': 'শরীরের অংশ:',
+      'symptom.painLevel.label': 'ব্যথার মাত্রা:',
+      'symptom.notes.label': 'অতিরিক্ত তথ্য:',
+      'symptom.saveDraft': 'খসড়া সংরক্ষণ',
+      'symptom.continue': 'এগিয়ে যান',
+      'symptom.submitting': 'জমা হচ্ছে...',
     },
   };
 
@@ -348,13 +382,18 @@ const TeleTriageI18n = (() => {
   }
 
   function translatePhrase(text) {
-    if (current === 'en') return text;
+    if (current === 'en' || !text) return text;
     let out = text;
     const keys = Object.keys(PHRASES).sort((a, b) => b.length - a.length);
     for (const en of keys) {
       if (out.includes(en)) out = out.split(en).join(PHRASES[en]);
     }
     return out;
+  }
+
+  function translatePlaceholder(text) {
+    if (current === 'en' || !text) return text;
+    return PHRASES[text] || translatePhrase(text);
   }
 
   function autoTranslateDom() {
@@ -364,8 +403,9 @@ const TeleTriageI18n = (() => {
     const skip = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT']);
 
     document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach((el) => {
+      if (el.hasAttribute('data-i18n-placeholder')) return;
       if (!el.dataset.i18nPhOrig) el.dataset.i18nPhOrig = el.placeholder;
-      el.placeholder = current === 'bn' ? translatePhrase(el.dataset.i18nPhOrig) : el.dataset.i18nPhOrig;
+      el.placeholder = current === 'bn' ? translatePlaceholder(el.dataset.i18nPhOrig) : el.dataset.i18nPhOrig;
     });
 
     document.querySelectorAll('option').forEach((opt) => {
@@ -404,7 +444,9 @@ const TeleTriageI18n = (() => {
     });
 
     document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
-      el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+      const key = el.getAttribute('data-i18n-placeholder');
+      if (!el.dataset.i18nPhOrig) el.dataset.i18nPhOrig = el.getAttribute('placeholder') || T.en[key] || '';
+      el.placeholder = t(key);
     });
 
     const titleEl = document.querySelector('[data-i18n-title]');

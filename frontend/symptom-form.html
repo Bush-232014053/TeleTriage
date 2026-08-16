@@ -96,13 +96,13 @@
       <div class="p-4 p-md-5 overflow-auto flex-grow-1">
         <div class="bg-white rounded-4 shadow-sm p-4 p-md-5 mx-auto" style="max-width: 900px;">
           
-          <h4 class="fw-bold mb-4" style="color: #187D85;">Symptom Details</h4>
+          <h4 class="fw-bold mb-4" style="color: #187D85;" data-i18n="symptom.details">Symptom Details</h4>
 
           <form id="symptomForm">
             <!-- Chief Complaint -->
             <div class="mb-4">
-              <label for="chiefComplaint" class="form-label fw-bold" style="color: #187D85;">Chief Complaint:</label>
-              <textarea id="chiefComplaint" class="form-control custom-input rounded-3" rows="3" placeholder="Describe your chief symptom....." required></textarea>
+              <label for="chiefComplaint" class="form-label fw-bold" style="color: #187D85;" data-i18n="symptom.chiefComplaint.label">Chief Complaint:</label>
+              <textarea id="chiefComplaint" class="form-control custom-input rounded-3" rows="3" data-i18n-placeholder="symptom.chiefComplaint.ph" placeholder="Describe your chief symptom....." required></textarea>
             </div>
 
             <!-- Custom Editable Inputs: Duration & Body Location + Pain Level Slider -->
@@ -110,8 +110,8 @@
               
               <!-- Editable Custom Input with Datalist Options for Duration -->
               <div class="col-md-4">
-                <label for="duration" class="form-label fw-bold" style="color: #187D85;">Duration:</label>
-                <input type="text" id="duration" list="durationOptions" class="form-control custom-input rounded-3" placeholder="e.g., sudden, 1-3 days" required>
+                <label for="duration" class="form-label fw-bold" style="color: #187D85;" data-i18n="symptom.duration.label">Duration:</label>
+                <input type="text" id="duration" list="durationOptions" class="form-control custom-input rounded-3" data-i18n-placeholder="symptom.duration.ph" placeholder="e.g., sudden, 1-3 days" required>
                 <datalist id="durationOptions">
                   <option value="sudden">Sudden / Less than 24h</option>
                   <option value="today">Today</option>
@@ -123,8 +123,8 @@
 
               <!-- Editable Custom Input with Datalist Options for Body Location -->
               <div class="col-md-4">
-                <label for="bodyLocation" class="form-label fw-bold" style="color: #187D85;">Body Location:</label>
-                <input type="text" id="bodyLocation" list="bodyLocationOptions" class="form-control custom-input rounded-3" placeholder="e.g., Chest, Back" required>
+                <label for="bodyLocation" class="form-label fw-bold" style="color: #187D85;" data-i18n="symptom.bodyLocation.label">Body Location:</label>
+                <input type="text" id="bodyLocation" list="bodyLocationOptions" class="form-control custom-input rounded-3" data-i18n-placeholder="symptom.bodyLocation.ph" placeholder="e.g., Chest, Back" required>
                 <datalist id="bodyLocationOptions">
                   <option value="Head / Neck"></option>
                   <option value="Chest / Back"></option>
@@ -136,7 +136,7 @@
               <!-- Pain Level Slider -->
               <div class="col-md-4">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                  <label for="painLevel" class="form-label fw-bold mb-0" style="color: #187D85;">Pain Level:</label>
+                  <label for="painLevel" class="form-label fw-bold mb-0" style="color: #187D85;" data-i18n="symptom.painLevel.label">Pain Level:</label>
                   <span class="fw-bold" style="color: #187D85;" id="painValue">6 / 10</span>
                 </div>
                 <input type="range" class="form-range mt-2" id="painLevel" min="1" max="10" value="6">
@@ -149,14 +149,14 @@
 
             <!-- Additional Notes -->
             <div class="mb-4">
-              <label for="additionalNotes" class="form-label fw-bold" style="color: #187D85;">Additional Notes:</label>
-              <textarea id="additionalNotes" class="form-control custom-input rounded-3" rows="3" placeholder="Any additional details or medical history......"></textarea>
+              <label for="additionalNotes" class="form-label fw-bold" style="color: #187D85;" data-i18n="symptom.notes.label">Additional Notes:</label>
+              <textarea id="additionalNotes" class="form-control custom-input rounded-3" rows="3" data-i18n-placeholder="symptom.notes.ph" placeholder="Any additional details or medical history......"></textarea>
             </div>
 
             <!-- Action Buttons -->
             <div class="d-flex justify-content-end gap-3 mt-5">
-              <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-3 fw-bold">Save Draft</button>
-              <button type="submit" class="btn text-white px-4 py-2 rounded-3 fw-bold" style="background-color: #187D85;">Continue</button>
+              <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-3 fw-bold" data-i18n="symptom.saveDraft">Save Draft</button>
+              <button type="submit" class="btn text-white px-4 py-2 rounded-3 fw-bold" style="background-color: #187D85;" data-i18n="symptom.continue">Continue</button>
             </div>
 
           </form>
