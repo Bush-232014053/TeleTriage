@@ -7,15 +7,6 @@
    case was scored the way it was. Swap KEYWORD_RULES below to extend it.
    ========================================================================== */
 
-/* ==========================================================================
-   TeleTriage — rule-based triage engine
-   Severity scale: 1 = Critical/Urgent ... 5 = Non-urgent
-   (matches the Figma "Severity scale" bar: 5·Non-urgent ... 1·Critical)
-   This is a simple, transparent, explainable rule engine — intentionally
-   NOT a black-box ML model, so a reviewing doctor can see exactly why a
-   case was scored the way it was. Swap KEYWORD_RULES below to extend it.
-   ========================================================================== */
-
 const TriageEngine = (() => {
 
   // Each rule: keywords to look for in the complaint text (case-insensitive),
