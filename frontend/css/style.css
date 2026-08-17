@@ -34,6 +34,12 @@ body, html {
 
 .hero-container {
   min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+.hero-main {
+  padding-bottom: 2rem;
 }
 
 /* Top Strip Header */
@@ -55,7 +61,6 @@ body, html {
   opacity: 0.95;
 }
 
-/* Text Shadows for Focus */
 .text-shadow {
   text-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
 }
@@ -64,7 +69,6 @@ body, html {
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
 }
 
-/* Action Buttons */
 .btn-brand {
   background: #ffffff;
   color: #187D85;
@@ -97,7 +101,6 @@ body, html {
   transform: translateY(-2px);
 }
 
-/* 3-Step Explainer Cards */
 .card-step {
   background: #ffffff;
   border-radius: 1rem;
@@ -122,14 +125,13 @@ body, html {
   position: absolute !important;
   bottom: 0 !important;
   left: 0 !important;
-  width: 33vw !important;
-  max-width: 450px !important;
-  min-width: 280px !important;
+  width: 22vw !important;
+  max-width: 320px !important;
+  min-width: 0 !important;
   z-index: 1;
   pointer-events: none;
   object-fit: contain;
   object-position: bottom left;
-  transform: translateY(1.5%);
 }
 
 /* Right Illustration (Doctor) Positioning */
@@ -137,14 +139,107 @@ body, html {
   position: absolute !important;
   bottom: 0 !important;
   right: 0 !important;
-  width: 28vw !important;
-  max-width: 390px !important;
-  min-width: 250px !important;
+  width: 20vw !important;
+  max-width: 280px !important;
+  min-width: 0 !important;
   z-index: 1;
   pointer-events: none;
   object-fit: contain;
   object-position: bottom right;
-  transform: translateY(2%);
+}
+
+/* 14\" laptops & tablet — hide side art, tighten layout */
+@media (max-width: 1399.98px) {
+  .hero-img-left,
+  .hero-img-right {
+    display: none !important;
+  }
+
+  .hero-main {
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .hero-container h1 {
+    font-size: clamp(1.65rem, 3.5vw, 2.35rem) !important;
+    line-height: 1.2;
+  }
+
+  .hero-container p.lead {
+    font-size: clamp(0.92rem, 1.8vw, 1.08rem) !important;
+    max-width: 92% !important;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .btn-brand,
+  .btn-brand-outline {
+    min-width: 130px;
+    padding: 10px 18px !important;
+    font-size: 0.92rem !important;
+  }
+
+  .card-step {
+    padding: 0.95rem 1rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .hero-container h1 br {
+    display: none;
+  }
+
+  .hero-main .row {
+    max-width: 100% !important;
+  }
+}
+
+/* Short viewports (768–800px height, common on 14\" @ 125–150% scale) */
+@media (max-height: 820px) {
+  .hero-container {
+    min-height: auto;
+  }
+
+  .top-strip {
+    height: 38px;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .hero-main {
+    padding-top: 0.25rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .hero-container h1 {
+    font-size: 1.75rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .hero-container p.lead {
+    font-size: 0.9rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .hero-main .d-flex.gap-3.my-4 {
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+
+  .hero-main .row.mt-3 {
+    margin-top: 0.5rem !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .hero-main {
+    max-width: 760px;
+    padding-bottom: 2.5rem;
+  }
 }
 /* Registration / Auth Custom Styles */
 .custom-input {
