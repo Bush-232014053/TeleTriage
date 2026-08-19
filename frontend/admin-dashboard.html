@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — TeleTriage</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light" data-i18n-auto>
+  <nav class="navbar bg-white shadow-sm px-4">
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.html" style="color:#187D85;">
+      <i class="bi bi-shield-lock-fill"></i> TeleTriage Admin
+    </a>
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-muted small" id="adminWelcome">Admin</span>
+      <button class="btn btn-sm text-white rounded-pill px-3" id="langToggle" style="background:#187D85;">EN | বাং</button>
+      <a href="index.html" data-logout class="btn btn-sm btn-outline-secondary rounded-pill px-3">Log Out</a>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <div id="adminAlert" class="alert d-none"></div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="bg-white rounded-4 border p-3 shadow-sm">
+          <div class="text-muted small">Registered Patients</div>
+          <div class="fs-2 fw-bold" id="statPatients">—</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="bg-white rounded-4 border p-3 shadow-sm">
+          <div class="text-muted small">Active Doctors</div>
+          <div class="fs-2 fw-bold" id="statDoctors">—</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="bg-white rounded-4 border p-3 shadow-sm">
+          <div class="text-muted small">Pending Applications</div>
+          <div class="fs-2 fw-bold text-warning" id="statPending">—</div>
+        </div>
+      </div>
+    </div>
+
+    <ul class="nav nav-pills gap-2 mb-3" id="adminTabs">
+      <li class="nav-item"><button class="nav-link active" data-tab="applications">Doctor Applications</button></li>
+      <li class="nav-item"><button class="nav-link" data-tab="doctors">Doctors</button></li>
+      <li class="nav-item"><button class="nav-link" data-tab="patients">Patients</button></li>
+      <li class="nav-item"><button class="nav-link" data-tab="create">Create Doctor</button></li>
+    </ul>
+
+    <div class="bg-white rounded-4 border shadow-sm p-4">
+      <div id="panel-applications">
+        <h5 class="fw-bold mb-3">Pending Doctor Applications</h5>
+        <p class="text-muted small">Doctors apply via <a href="doctor-join.html">Join as Doctor</a>. Approve here to give them a login ID.</p>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>Name</th><th>Specialty</th><th>Email</th><th>Phone</th><th>Applied</th><th></th></tr></thead>
+            <tbody id="applicationsBody"><tr><td colspan="6" class="text-muted text-center py-4">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="panel-doctors" class="d-none">
+        <h5 class="fw-bold mb-3">Registered Doctors</h5>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>ID</th><th>Name</th><th>Specialty</th><th>Degree</th><th>Status</th><th></th></tr></thead>
+            <tbody id="doctorsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="panel-patients" class="d-none">
+        <h5 class="fw-bold mb-3">Registered Patients</h5>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Registered</th><th>Status</th><th></th></tr></thead>
+            <tbody id="patientsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="panel-create" class="d-none">
+        <h5 class="fw-bold mb-3">Pre-register Doctor (Admin Approval)</h5>
+        <form id="createDoctorForm" class="row g-3" style="max-width:640px;">
+          <div class="col-md-6"><input type="text" id="newDoctorCode" class="form-control" placeholder="Doctor ID e.g. DOC-015" required></div>
+          <div class="col-md-6"><input type="text" id="newDoctorName" class="form-control" placeholder="Full Name (Dr. ...)" required></div>
+          <div class="col-md-6">
+            <select id="newDoctorSpecialty" class="form-select" required>
+              <option value="">Specialty</option>
+              <option>Cardiology</option><option>Neurology</option><option>Emergency Medicine</option>
+              <option>General Medicine</option><option>Rheumatology</option><option>Dermatology</option>
+            </select>
+          </div>
+          <div class="col-md-6"><input type="password" id="newDoctorPassword" class="form-control" placeholder="Password (default: Password1!)" value="Password1!"></div>
+          <div class="col-12"><button type="submit" class="btn text-white px-4 rounded-3" style="background:#187D85;">Create Doctor Account</button></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="alert alert-info mt-4 small mb-0">
+      <strong>Demo credentials:</strong> Admin <code>admin</code> / <code>Password1!</code> —
+      Doctors <code>DOC-001</code>…<code>DOC-014</code> / <code>Password1!</code>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/admin-dashboard-controller.js"></script>
+</body>
+</html>

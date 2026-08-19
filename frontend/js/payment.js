@@ -36,6 +36,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
+    if (!sessionStorage.getItem('teletriage_selected_doctor_id')) {
+      alert(tr('Please select a doctor on the Matched Doctors page first.'));
+      window.location.href = 'doctor-match.html';
+      return;
+    }
+
     if (!TeleTriageAPI.getToken()) {
       alert(tr('Please log in first.'));
       window.location.href = 'patient-login.html';

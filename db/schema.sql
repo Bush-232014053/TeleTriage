@@ -19,10 +19,15 @@ CREATE TABLE IF NOT EXISTS doctors (
     doctor_code   VARCHAR(30) NOT NULL UNIQUE,
     full_name     VARCHAR(120) NOT NULL,
     specialty     VARCHAR(80) NOT NULL,
+    qualification VARCHAR(120),
+    years_experience SMALLINT NOT NULL DEFAULT 0,
     password_hash VARCHAR(255) NOT NULL,
     is_active     BOOLEAN NOT NULL DEFAULT TRUE,
     created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE doctors ADD COLUMN IF NOT EXISTS qualification VARCHAR(120);
+ALTER TABLE doctors ADD COLUMN IF NOT EXISTS years_experience SMALLINT NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS admins (
     admin_id      SERIAL PRIMARY KEY,
@@ -40,8 +45,11 @@ CREATE TABLE IF NOT EXISTS symptom_submissions (
     pain_level      SMALLINT NOT NULL CHECK (pain_level BETWEEN 0 AND 10),
     body_location   VARCHAR(120),
     notes           TEXT,
+    preferred_doctor_id INT NULL REFERENCES doctors(doctor_id),
     submitted_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE symptom_submissions ADD COLUMN IF NOT EXISTS preferred_doctor_id INT NULL REFERENCES doctors(doctor_id);
 
 CREATE TABLE IF NOT EXISTS triage_results (
     triage_id          SERIAL PRIMARY KEY,
@@ -105,8 +113,11 @@ CREATE TABLE IF NOT EXISTS doctor_interest_requests (
     specialty        VARCHAR(80) NOT NULL,
     registration_no  VARCHAR(60),
     message          TEXT,
+    status           VARCHAR(20) NOT NULL DEFAULT 'pending',
     created_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE doctor_interest_requests ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'pending';
 
 CREATE TABLE IF NOT EXISTS case_archive (
     archive_id    SERIAL PRIMARY KEY,

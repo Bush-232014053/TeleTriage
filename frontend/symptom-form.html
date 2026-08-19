@@ -214,6 +214,8 @@
         });
 
         sessionStorage.setItem('teletriage_submission_id', String(data.submissionId));
+        sessionStorage.removeItem('teletriage_selected_doctor_id');
+        sessionStorage.removeItem('teletriage_selected_doctor');
         sessionStorage.setItem('teletriage_triage', JSON.stringify({
           ...data.triage,
           painLevel: payload.painLevel,

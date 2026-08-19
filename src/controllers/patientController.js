@@ -205,6 +205,7 @@ async function getRecommendedDoctors(req, res) {
 
   const { rows: doctors } = await pool.query(
     `SELECT d.doctor_id, d.doctor_code, d.full_name, d.specialty,
+            d.qualification, d.years_experience,
             COALESCE(
               (SELECT COUNT(*)::int FROM queue_entries q
                JOIN triage_results tr2 ON tr2.triage_id = q.triage_id
@@ -213,7 +214,7 @@ async function getRecommendedDoctors(req, res) {
             ) AS active_cases
      FROM doctors d
      WHERE d.specialty = $1 AND d.is_active = TRUE
-     ORDER BY active_cases ASC, d.full_name ASC`,
+     ORDER BY active_cases ASC, d.years_experience DESC, d.full_name ASC`,
     [triage.assigned_specialty]
   );
 
@@ -222,6 +223,8 @@ async function getRecommendedDoctors(req, res) {
     doctorCode: d.doctor_code,
     fullName: d.full_name,
     specialty: d.specialty,
+    qualification: d.qualification || 'MBBS',
+    yearsExperience: Number(d.years_experience) || 0,
     activeCases: Number(d.active_cases),
     matchScore: Math.max(60, 100 - Number(d.active_cases) * 8 - index * 2),
     rank: index + 1,
@@ -242,6 +245,54 @@ async function getRecommendedDoctors(req, res) {
   });
 }
 
+// POST /api/patients/triage/:submissionId/select-doctor
+async function selectDoctor(req, res) {
+  const patientId = req.user.id;
+  const { submissionId } = req.params;
+  const { doctorId } = req.body;
+
+  if (!doctorId) {
+    return res.status(400).json({ error: 'doctorId is required.' });
+  }
+
+  const { rows: submissionRows } = await pool.query(
+    `SELECT s.submission_id, tr.assigned_specialty
+     FROM symptom_submissions s
+     JOIN triage_results tr ON tr.submission_id = s.submission_id
+     WHERE s.submission_id = $1 AND s.patient_id = $2`,
+    [submissionId, patientId]
+  );
+  if (submissionRows.length === 0) {
+    return res.status(404).json({ error: 'Triage submission not found.' });
+  }
+
+  const { rows: doctorRows } = await pool.query(
+    `SELECT doctor_id, full_name, specialty, qualification, doctor_code
+     FROM doctors WHERE doctor_id = $1 AND specialty = $2 AND is_active = TRUE`,
+    [doctorId, submissionRows[0].assigned_specialty]
+  );
+  if (doctorRows.length === 0) {
+    return res.status(400).json({ error: 'Doctor not available for this specialty.' });
+  }
+
+  await pool.query(
+    `UPDATE symptom_submissions SET preferred_doctor_id = $1 WHERE submission_id = $2`,
+    [doctorId, submissionId]
+  );
+
+  const doc = doctorRows[0];
+  res.json({
+    message: 'Doctor selected.',
+    selectedDoctor: {
+      doctorId: doc.doctor_id,
+      doctorCode: doc.doctor_code,
+      fullName: doc.full_name,
+      specialty: doc.specialty,
+      qualification: doc.qualification,
+    },
+  });
+}
+
 // POST /api/patients/me/cancel-consultation — refund if still Queued
 async function cancelConsultation(req, res) {
   const result = await cancelConsultationAndRefund(req.user.id, req.body.reason);
@@ -255,5 +306,6 @@ module.exports = {
   getMyHistory,
   getMyProfile,
   getRecommendedDoctors,
+  selectDoctor,
   cancelConsultation,
 };

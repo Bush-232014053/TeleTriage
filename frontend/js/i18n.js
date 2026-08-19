@@ -401,6 +401,13 @@ const TeleTriageI18n = (() => {
     ' Cases': ' কেস',
     'Patient ID:': 'রোগী আইডি:',
     DATE: 'তারিখ',
+    'Choose This Doctor': 'এই ডাক্তার বেছে নিন',
+    Selected: 'নির্বাচিত',
+    'Please select a doctor before continuing to payment.': 'পেমেন্টের আগে একজন ডাক্তার বেছে নিন।',
+    'Please select a doctor on the Matched Doctors page first.': 'আগে মিলিত ডাক্তার পেঘ이지 থেকে ডাক্তার বেছে নিন।',
+    'You selected:': 'আপনি বেছে নিয়েছেন:',
+    'years experience': 'বছর অভিজ্ঞতা',
+    'Could not select doctor.': 'ডাক্তার নির্বাচন হয়নি।',
   };
 
   const T = {

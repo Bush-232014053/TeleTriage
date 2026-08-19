@@ -9,6 +9,7 @@ const {
   getMyHistory,
   getMyProfile,
   getRecommendedDoctors,
+  selectDoctor,
   cancelConsultation,
 } = require('../controllers/patientController');
 
@@ -23,6 +24,7 @@ router.post('/symptoms', asyncHandler(submitSymptoms));
 router.get('/triage/:submissionId', asyncHandler(getTriageResult));
 // GET  /api/patients/triage/:submissionId/doctors — matched doctors for consultation
 router.get('/triage/:submissionId/doctors', asyncHandler(getRecommendedDoctors));
+router.post('/triage/:submissionId/select-doctor', asyncHandler(selectDoctor));
 // GET  /api/patients/me/status                 — current queue position/status
 router.get('/me/status', asyncHandler(getMyStatus));
 // GET  /api/patients/me/history                — this patient's past completed cases

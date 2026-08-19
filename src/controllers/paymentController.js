@@ -34,19 +34,23 @@ async function createQueueEntryIfNeeded(payment) {
   }
 
   const { rows: triageRows } = await pool.query(
-    'SELECT triage_id, assigned_specialty FROM triage_results WHERE submission_id = $1',
+    `SELECT tr.triage_id, tr.assigned_specialty, s.preferred_doctor_id
+     FROM triage_results tr
+     JOIN symptom_submissions s ON s.submission_id = tr.submission_id
+     WHERE tr.submission_id = $1`,
     [payment.submission_id]
   );
   const triage = triageRows[0];
   if (!triage) return null;
 
   const durationMinutes = payment.duration_minutes || 10;
+  const preferredDoctorId = triage.preferred_doctor_id || null;
 
   const { rows: queueRows } = await pool.query(
-    `INSERT INTO queue_entries (patient_id, submission_id, triage_id, duration_minutes, status)
-     VALUES ($1, $2, $3, $4, 'Queued')
+    `INSERT INTO queue_entries (patient_id, submission_id, triage_id, duration_minutes, status, assigned_doctor_id)
+     VALUES ($1, $2, $3, $4, 'Queued', $5)
      RETURNING queue_id`,
-    [payment.patient_id, payment.submission_id, triage.triage_id, durationMinutes]
+    [payment.patient_id, payment.submission_id, triage.triage_id, durationMinutes, preferredDoctorId]
   );
 
   await broadcastQueueUpdate(triage.assigned_specialty);
