@@ -408,6 +408,60 @@ const TeleTriageI18n = (() => {
     'You selected:': 'আপনি বেছে নিয়েছেন:',
     'years experience': 'বছর অভিজ্ঞতা',
     'Could not select doctor.': 'ডাক্তার নির্বাচন হয়নি।',
+    Admin: 'অ্যাডমিন',
+    'Registered Patients': 'নিবন্ধিত রোগী',
+    'Active Doctors': 'সক্রিয় ডাক্তার',
+    'Pending Applications': 'অপেক্ষমাণ আবেদন',
+    'Doctor Applications': 'ডাক্তার আবেদন',
+    Doctors: 'ডাক্তার',
+    Patients: 'রোগী',
+    'Create Doctor': 'ডাক্তার তৈরি',
+    'Pending Doctor Applications': 'অপেক্ষমাণ ডাক্তার আবেদন',
+    'Doctors apply via': 'ডাক্তাররা আবেদন করেন',
+    'Approve here to give them a login ID.': 'এখানে approve করলে login ID পাবেন।',
+    Name: 'নাম',
+    Email: 'ইমেইল',
+    Phone: 'ফোন',
+    Applied: 'আবেদনের তারিখ',
+    'Registered Doctors': 'নিবন্ধিত ডাক্তার',
+    Degree: 'ডিগ্রি',
+    Status: 'স্ট্যাটাস',
+    Registered: 'নিবন্ধিত',
+    'Pre-register Doctor (Admin Approval)': 'ডাক্তার pre-register (অ্যাডমিন অনুমোদন)',
+    'Create Doctor Account': 'ডাক্তার অ্যাকাউন্ট তৈরি',
+    'Demo credentials:': 'ডেমো লগইন:',
+    'Reset Patient Password': 'রোগীর পাসওয়ার্ড রিসেট',
+    'Enter the email and phone number you used when registering. We will verify them and let you set a new password.':
+      'নিবন্ধনের সময় যে email ও phone দিয়েছিলেন তা দিন। যাচাই করে নতুন password set করতে পারবেন।',
+    'New Password': 'নতুন পাসওয়ার্ড',
+    'Confirm New Password': 'নতুন পাসওয়ার্ড নিশ্চিত',
+    'Update Password': 'পাসওয়ার্ড আপডেট',
+    'Back to Patient Log In': '← রোগী লগ ইন-এ ফিরুন',
+    'Doctor Password Help': 'ডাক্তার পাসওয়ার্ড সহায়তা',
+    'Doctor accounts are created and approved by the TeleTriage': 'TeleTriage',
+    administrator: 'অ্যাডমিন',
+    'Self-service password reset is not available for doctors.': 'ডাক্তারদের self-service reset নেই।',
+    'Demo doctors use ID': 'ডেমো ডাক্তার ID',
+    'with password': 'password',
+    'New doctors apply via': 'নতুন ডাক্তার আবেদন',
+    'admin approves and assigns an ID.': 'অ্যাডমিন approve করে ID দেন।',
+    'Admin can create doctor accounts from the': 'অ্যাডমিন ডাক্তার account তৈরি করতে পারেন',
+    'Admin Portal': 'অ্যাডমিন পোর্টাল',
+    'Back to Doctor Log In': '← ডাক্তার লগ ইন-এ ফিরুন',
+    'System Administrator Portal': 'সিস্টেম অ্যাডমিন পোর্টাল',
+    'Admin Log In': 'অ্যাডমিন লগ ইন',
+    'Manage doctors, patients, and applications': 'ডাক্তার, রোগী ও আবেদন পরিচালনা',
+    Username: 'ইউজারনেম',
+    'Back to Home': '← হোমে ফিরুন',
+    Approve: 'অনুমোদন',
+    Reject: 'প্রত্যাখ্যান',
+    Deactivate: 'নিষ্ক্রিয়',
+    Active: 'সক্রিয়',
+    Inactive: 'নিষ্ক্রিয়',
+    'Loading…': 'লোড হচ্ছে…',
+    'No pending applications.': 'কোনো অপেক্ষমাণ আবেদন নেই।',
+    'Select the doctor you prefer': 'আপনার পছন্দের ডাক্তার বেছে নিন',
+    'then continue to payment.': 'তারপর পেমেন্টে যান।',
   };
 
   const T = {
@@ -523,9 +577,12 @@ const TeleTriageI18n = (() => {
     },
   };
 
+  const BN_TO_EN = Object.fromEntries(Object.entries(PHRASES).map(([en, bn]) => [bn, en]));
+
   let current = localStorage.getItem(STORAGE_KEY) || 'en';
   const textOriginals = new WeakMap();
   let applying = false;
+  let originalsCaptured = false;
 
   function t(key) {
     return (T[current] && T[current][key]) || T.en[key] || key;
@@ -541,48 +598,100 @@ const TeleTriageI18n = (() => {
     return out;
   }
 
+  function restorePhrase(text) {
+    if (!text) return text;
+    if (BN_TO_EN[text]) return BN_TO_EN[text];
+    let out = text;
+    const keys = Object.keys(BN_TO_EN).sort((a, b) => b.length - a.length);
+    for (const bn of keys) {
+      if (out.includes(bn)) out = out.split(bn).join(BN_TO_EN[bn]);
+    }
+    return out;
+  }
+
   function translatePlaceholder(text) {
     if (current === 'en' || !text) return text;
     return PHRASES[text] || translatePhrase(text);
+  }
+
+  function shouldSkipNode(parent) {
+    const skip = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT']);
+    if (!parent || skip.has(parent.tagName)) return true;
+    if (parent.closest('[data-i18n]')) return true;
+    if (parent.closest('#langToggle, .lang-btn')) return true;
+    return false;
+  }
+
+  /** Normalize visible text to English for storage — works whether live text is EN or BN. */
+  function englishSnapshot(text) {
+    if (!text) return text;
+    return restorePhrase(text);
+  }
+
+  /** Snapshot English from HTML once — never overwrite after this. */
+  function captureStaticOriginals() {
+    if (originalsCaptured) return;
+
+    document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach((el) => {
+      if (el.dataset.i18nPhOrig) return;
+      const key = el.getAttribute('data-i18n-placeholder');
+      el.dataset.i18nPhOrig = key ? (T.en[key] || el.getAttribute('placeholder') || '') : (el.getAttribute('placeholder') || '');
+    });
+
+    document.querySelectorAll('option').forEach((opt) => {
+      if (!opt.dataset.i18nOrig) opt.dataset.i18nOrig = opt.textContent;
+    });
+
+    if (!document.querySelector('[data-i18n-title]') && !document.documentElement.dataset.i18nTitleOrig) {
+      document.documentElement.dataset.i18nTitleOrig = document.title;
+    }
+
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node = walker.nextNode();
+    while (node) {
+      if (!shouldSkipNode(node.parentElement)) {
+        textOriginals.set(node, node.textContent);
+      }
+      node = walker.nextNode();
+    }
+
+    originalsCaptured = true;
+  }
+
+  function englishForTextNode(node) {
+    if (textOriginals.has(node)) return textOriginals.get(node);
+    const english = englishSnapshot(node.textContent);
+    textOriginals.set(node, english);
+    return english;
   }
 
   function autoTranslateDom() {
     if (!document.body.hasAttribute('data-i18n-auto') || applying) return;
     applying = true;
 
-    const skip = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT']);
-
     document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach((el) => {
       if (el.hasAttribute('data-i18n-placeholder')) return;
-      if (!el.dataset.i18nPhOrig) el.dataset.i18nPhOrig = el.placeholder;
+      if (!el.dataset.i18nPhOrig) el.dataset.i18nPhOrig = englishSnapshot(el.placeholder);
       el.placeholder = current === 'bn' ? translatePlaceholder(el.dataset.i18nPhOrig) : el.dataset.i18nPhOrig;
     });
 
     document.querySelectorAll('option').forEach((opt) => {
-      if (!opt.dataset.i18nOrig) opt.dataset.i18nOrig = opt.textContent;
+      if (!opt.dataset.i18nOrig) opt.dataset.i18nOrig = englishSnapshot(opt.textContent);
       opt.textContent = current === 'bn' ? translatePhrase(opt.dataset.i18nOrig) : opt.dataset.i18nOrig;
     });
+
+    if (!document.querySelector('[data-i18n-title]') && document.documentElement.dataset.i18nTitleOrig) {
+      const titleOrig = document.documentElement.dataset.i18nTitleOrig;
+      document.title = current === 'bn' ? translatePhrase(titleOrig) : titleOrig;
+    }
 
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node = walker.nextNode();
     while (node) {
-      const parent = node.parentElement;
-      if (!parent || skip.has(parent.tagName) || parent.closest('[data-i18n]')) {
-        node = walker.nextNode();
-        continue;
+      if (!shouldSkipNode(node.parentElement)) {
+        const orig = englishForTextNode(node);
+        node.textContent = current === 'bn' ? translatePhrase(orig) : orig;
       }
-      if (!textOriginals.has(node)) {
-        textOriginals.set(node, node.textContent);
-      } else {
-        const stored = textOriginals.get(node);
-        const live = node.textContent;
-        const translated = translatePhrase(stored);
-        if (live !== stored && live !== translated) {
-          textOriginals.set(node, live);
-        }
-      }
-      const orig = textOriginals.get(node);
-      node.textContent = current === 'bn' ? translatePhrase(orig) : orig;
       node = walker.nextNode();
     }
     applying = false;
@@ -604,8 +713,8 @@ const TeleTriageI18n = (() => {
 
     document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
       const key = el.getAttribute('data-i18n-placeholder');
-      if (!el.dataset.i18nPhOrig) el.dataset.i18nPhOrig = el.getAttribute('placeholder') || T.en[key] || '';
-      el.placeholder = t(key);
+      if (!el.dataset.i18nPhOrig) el.dataset.i18nPhOrig = T.en[key] || el.getAttribute('placeholder') || '';
+      el.placeholder = current === 'bn' ? t(key) : el.dataset.i18nPhOrig;
     });
 
     const titleEl = document.querySelector('[data-i18n-title]');
@@ -618,7 +727,7 @@ const TeleTriageI18n = (() => {
   }
 
   function reapply() {
-    if (current === 'bn') autoTranslateDom();
+    apply(current);
   }
 
   function apply(lang) {
@@ -641,19 +750,22 @@ const TeleTriageI18n = (() => {
         btn.addEventListener('click', toggle);
       }
     });
+
+    captureStaticOriginals();
     apply(current);
 
-    // Re-apply after dynamic JS updates labels
     let reapplyTimer;
     const observer = new MutationObserver(() => {
-      if (applying || current !== 'bn') return;
+      if (applying) return;
       clearTimeout(reapplyTimer);
-      reapplyTimer = setTimeout(() => autoTranslateDom(), 150);
+      reapplyTimer = setTimeout(() => reapply(), 120);
     });
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   }
 
   return { init, toggle, apply, t, tr, reapply, getLang: () => current };
 })();
+
+window.TeleTriageI18n = TeleTriageI18n;
 
 document.addEventListener('DOMContentLoaded', () => TeleTriageI18n.init());
