@@ -1,5 +1,7 @@
 // Triage result page — displays server-authoritative triage from sessionStorage
 
+const tr = (s) => (window.TeleTriageI18n ? TeleTriageI18n.tr(s) : s);
+
 document.addEventListener('DOMContentLoaded', () => {
   const storedUser = JSON.parse(sessionStorage.getItem('teletriage_user') || 'null');
   if (storedUser) {
@@ -44,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (cssClass === 'urgent') {
     if (statusBanner) statusBanner.style.backgroundColor = '#dc2626';
     if (actionBtn) {
-      actionBtn.textContent = 'View Matched Doctors';
+      actionBtn.textContent = tr('View Matched Doctors');
       actionBtn.setAttribute('href', 'doctor-match.html');
     }
     document.getElementById('step4')?.classList.add('active');
@@ -52,14 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (cssClass === 'moderate') {
     if (statusBanner) statusBanner.style.backgroundColor = '#eab308';
     if (actionBtn) {
-      actionBtn.textContent = 'View Matched Doctors';
+      actionBtn.textContent = tr('View Matched Doctors');
       actionBtn.setAttribute('href', 'doctor-match.html');
     }
     document.getElementById('step3')?.classList.add('active');
   } else {
     if (statusBanner) statusBanner.style.backgroundColor = '#84cc16';
     if (actionBtn) {
-      actionBtn.textContent = 'View Matched Doctors';
+      actionBtn.textContent = tr('View Matched Doctors');
       actionBtn.setAttribute('href', 'doctor-match.html');
     }
     document.getElementById('step1')?.classList.add('active');

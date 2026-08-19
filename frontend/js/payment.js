@@ -1,3 +1,5 @@
+const tr = (s) => (window.TeleTriageI18n ? TeleTriageI18n.tr(s) : s);
+
 document.addEventListener('DOMContentLoaded', async () => {
   const submissionId = sessionStorage.getItem('teletriage_submission_id');
   const durationSelect = document.getElementById('consultationDuration');
@@ -29,13 +31,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   payBtn.addEventListener('click', async function handlePay() {
     if (!submissionId) {
-      alert('No triage submission found. Please complete the symptom form first.');
+      alert(tr('No triage submission found. Please complete the symptom form first.'));
       window.location.href = 'symptom-form.html';
       return;
     }
 
     if (!TeleTriageAPI.getToken()) {
-      alert('Please log in first.');
+      alert(tr('Please log in first.'));
       window.location.href = 'patient-login.html';
       return;
     }
@@ -48,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     sessionStorage.setItem('teletriage_fee', String(fee));
 
     this.disabled = true;
-    this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Redirecting to payment gateway...';
+    this.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> ${tr('Redirecting to payment gateway...')}`;
 
     const payload = { submissionId: Number(submissionId), durationMinutes, amount: fee };
 
@@ -82,9 +84,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (error) {
       console.error('Payment error:', error);
-      alert(error.message || 'Server not responding. Please check backend status.');
+      alert(error.message || tr('Server not responding. Please check backend status.'));
       this.disabled = false;
-      this.innerText = 'Pay Now & Confirm Booking';
+      this.innerText = tr('Pay Now & Confirm Booking');
     }
   });
 
@@ -92,7 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const durationMinutes = Number(durationSelect?.value || 10);
     const fee = (durationMinutes / 10) * feePer10;
     if (document.getElementById('summaryDuration')) {
-      document.getElementById('summaryDuration').textContent = `${durationMinutes} mins`;
+      document.getElementById('summaryDuration').textContent = `${durationMinutes} ${tr('mins')}`;
     }
     if (document.getElementById('summaryFee')) {
       document.getElementById('summaryFee').textContent = `${fee} BDT`;
@@ -110,11 +112,12 @@ function renderSandboxInfo(gateways) {
 
   container.innerHTML = `
     <div class="alert alert-info py-2 small mb-3">
-      <strong>Sandbox mode</strong> — test payments only.
+      <strong>${tr('Sandbox mode')}</strong> — ${tr('test payments only')}.
       <ul class="mb-0 mt-2">
         <li><strong>bKash:</strong> wallet <code>01929918378</code>, PIN <code>12121</code>, OTP <code>123456</code></li>
         <li><strong>SSLCommerz:</strong> store <code>${ssl.storeId || 'testbox'}</code></li>
-        <li><strong>Refund:</strong> ${refund}</li>
+        <li><strong>${tr('Refund')}:</strong> ${refund}</li>
       </ul>
     </div>`;
+  TeleTriageI18n?.reapply();
 }

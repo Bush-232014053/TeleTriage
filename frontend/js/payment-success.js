@@ -1,3 +1,5 @@
+const tr = (s) => (window.TeleTriageI18n ? TeleTriageI18n.tr(s) : s);
+
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const gateway = params.get('gateway') || sessionStorage.getItem('teletriage_payment_gateway') || '—';
@@ -15,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (gatewayEl) gatewayEl.textContent = gateway;
   if (amountEl) amountEl.textContent = `${amount} BDT`;
   if (dateEl) dateEl.textContent = new Date().toLocaleString();
-  if (routingEl) routingEl.textContent = 'Live Priority Queue';
+  if (routingEl) routingEl.textContent = tr('Live Priority Queue');
 
   sessionStorage.removeItem('teletriage_pending_payment_id');
   sessionStorage.removeItem('teletriage_pending_tran_id');

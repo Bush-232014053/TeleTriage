@@ -1,5 +1,7 @@
 // Loads detected problem + ranked doctor matches from the backend API.
 
+const tr = (s) => (window.TeleTriageI18n ? TeleTriageI18n.tr(s) : s);
+
 document.addEventListener('DOMContentLoaded', async () => {
   const submissionId = sessionStorage.getItem('teletriage_submission_id');
   const alertBox = document.getElementById('matchAlert');
@@ -12,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (!submissionId) {
-    showError('No triage submission found. Please submit your symptoms first.');
+    showError(tr('No triage submission found. Please submit your symptoms first.'));
     setTimeout(() => { window.location.href = 'symptom-form.html'; }, 2000);
     return;
   }
@@ -23,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderDoctors(data.recommendedDoctors || []);
     sessionStorage.setItem('teletriage_recommended_doctors', JSON.stringify(data.recommendedDoctors));
   } catch (err) {
-    showError(err.message || 'Could not load matched doctors.');
+    showError(err.message || tr('Could not load matched doctors.'));
   }
 
   function renderProblem(problem) {
@@ -37,7 +39,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function renderDoctors(doctors) {
-    document.getElementById('doctorCountBadge').textContent = `${doctors.length} doctor${doctors.length === 1 ? '' : 's'}`;
+    document.getElementById('doctorCountBadge').textContent =
+      `${doctors.length} ${tr(doctors.length === 1 ? 'doctor' : 'doctors')}`;
 
     if (doctors.length === 0) {
       noDoctors.classList.remove('d-none');
@@ -49,12 +52,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       return `
         <div class="col-md-6 col-lg-4">
           <div class="border rounded-4 p-3 h-100 ${isTop ? 'border-success border-2 bg-success-subtle' : 'bg-white'}">
-            ${isTop ? '<span class="badge bg-success mb-2">Best Match</span>' : `<span class="badge bg-secondary mb-2">#${doc.rank}</span>`}
+            ${isTop ? `<span class="badge bg-success mb-2">${tr('Best Match')}</span>` : `<span class="badge bg-secondary mb-2">#${doc.rank}</span>`}
             <h6 class="fw-bold mb-1">${escapeHtml(doc.fullName)}</h6>
             <p class="text-muted small mb-2">${escapeHtml(doc.specialty)} · ${escapeHtml(doc.doctorCode)}</p>
             <div class="d-flex justify-content-between align-items-center">
-              <span class="small text-muted">Active cases: ${doc.activeCases}</span>
-              <span class="badge rounded-pill" style="background:#187D85;">${doc.matchScore}% fit</span>
+              <span class="small text-muted">${tr('Active cases:')} ${doc.activeCases}</span>
+              <span class="badge rounded-pill" style="background:#187D85;">${doc.matchScore}%${tr(' fit')}</span>
             </div>
           </div>
         </div>`;

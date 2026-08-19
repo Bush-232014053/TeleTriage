@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const tr = (s) => (window.TeleTriageI18n ? TeleTriageI18n.tr(s) : s);
   const form = document.getElementById('doctorInterestForm');
   const alertBox = document.getElementById('joinAlert');
 
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const btn = form.querySelector('button[type="submit"]');
     btn.disabled = true;
-    btn.textContent = 'Submitting...';
+    btn.textContent = tr('Submitting...');
 
     try {
       const result = await TeleTriageAPI.request('/api/public/doctor-interest', {
@@ -30,11 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
       form.reset();
     } catch (err) {
       alertBox.className = 'alert alert-danger';
-      alertBox.textContent = err.message || 'Submission failed. Please try again.';
+      alertBox.textContent = err.message || tr('Submission failed. Please try again.');
       alertBox.classList.remove('d-none');
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Submit Interest Application';
+      btn.textContent = tr('Submit Interest Application');
     }
   });
 });

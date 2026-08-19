@@ -258,6 +258,149 @@ const TeleTriageI18n = (() => {
     // Breadcrumbs partials
     'Symptom Submission': 'লক্ষণ জমা',
     'Consultation Payment': 'পরামর্শ পেমেন্ট',
+
+    // —— Extended coverage (all pages + JS strings) ——
+    Schedule: 'সময়সূচি',
+    'Patient Login': 'রোগী লগ ইন',
+    'Log in here': 'এখানে লগ ইন করুন',
+    'Already registered?': 'ইতিমধ্যে নিবন্ধিত?',
+    'Focus on clinical work — we handle triage scoring, queue ordering, and payment collection before patients reach you.':
+      'ক্লিনিক্যাল কাজে মন দিন — ট্রায়াজ, লাইন ও পেমেন্ট আমরা সামলে নিই।',
+    'Priority Queue, Not Chaos': 'অগ্রাধিকার লাইন, বিশৃঙ্খলা নয়',
+    'Patients arrive pre-sorted by AI severity (1–5). Critical cases surface first — you never dig through a random waiting room.':
+      'রোগী AI গুরুত্ব (১–৫) অনুযায়ী আগে থেকেই সাজানো থাকে। জরুরি কেস প্রথমে আসে।',
+    'Payment Already Collected': 'পেমেন্ট আগেই সংগ্রহ',
+    'Consultation fees are paid via bKash/SSLCommerz before a patient enters your queue. No billing disputes at the door.':
+      'আপনার লাইনে আসার আগেই bKash/SSLCommerz-এ ফি পরিশোধ হয়। বিল নিয়ে ঝামেলা নেই।',
+    'Privacy by Design': 'গোপনীয়তা নিশ্চিত',
+    'You see anonymized patient IDs and full triage summaries — aligned with telemedicine privacy requirements.':
+      'আপনি anonymized রোগী ID ও পূর্ণ ট্রায়াজ সারাংশ দেখেন — টেলিমেডিসিন গোপনীয়তা মেনে।',
+    'Rich Case Context': 'সম্পূর্ণ কেস তথ্য',
+    'Chief complaint, pain level, duration, specialty routing, and past case history — all on one screen.':
+      'প্রধান সমস্যা, ব্যথা, সময়কাল, বিশেষত্ব ও অতীত কেস — এক স্ক্রিনে।',
+    'Live Dashboard': 'লাইভ ড্যাশবোর্ড',
+    'Track critical/urgent counts, active consultations, and completed cases today from your doctor dashboard.':
+      'জরুরি সংখ্যা, সক্রিয় পরামর্শ ও আজকের সম্পন্ন কেস ট্র্যাক করুন।',
+    'Flexible Consult Length': 'নমনীয় পরামর্শ সময়',
+    'Patients choose 10–60 minute slots. Queue wait estimates adjust automatically based on booked duration.':
+      'রোগী ১০–৬০ মিনিট স্লট বেছে নেয়। লাইনের অপেক্ষা স্বয়ংক্রিয়ভাবে হিসাব হয়।',
+    'Doctors are verified and onboarded by our admin team. Submit your interest below.':
+      'ডাক্তারদের অ্যাডমিন যাচাই করে। নিচে আগ্রহ জানান।',
+    'Full Name (Dr. ...)': 'পুরো নাম (ডাঃ ...)',
+    'Professional Email': 'পেশাদার ইমেইল',
+    'Phone (01XXXXXXXXX)': 'ফোন (01XXXXXXXXX)',
+    'BMDC / Registration No. (optional)': 'BMDC / রেজিস্ট্রেশন নং (ঐচ্ছিক)',
+    'Why do you want to join TeleTriage? (optional)': 'কেন TeleTriage-এ যোগ দিতে চান? (ঐচ্ছিক)',
+    'Real-time prioritized patient stream based on AI triage severity.':
+      'AI ট্রায়াজ গুরুত্ব অনুযায়ী রিয়েল-টাইম অগ্রাধিকার লাইন।',
+    'Moderate / Low': 'মাঝারি / কম',
+    'Start Review': 'পর্যালোচনা শুরু',
+    'Queue is empty.': 'লাইন খালি।',
+    'Failed to load queue.': 'লাইন লোড ব্যর্থ।',
+    'Could not update case status.': 'কেস স্ট্যাটাস আপডেট হয়নি।',
+    'No patients in queue right now.': 'এখন লাইনে কোনো রোগী নেই।',
+    PAYMENT: 'পেমেন্ট',
+    Patient: 'রোগী',
+    Patients: 'রোগী',
+    'In Line': 'লাইনে',
+    mins: 'মিনিট',
+    'Archive of resolved triage assessments, diagnosis logs, and medical records.':
+      'সমাধান হওয়া ট্রায়াজ, রোগ নির্ণয় ও রেকর্ডের সংগ্রহশালা।',
+    'All Outcome Statuses': 'সব ফলাফল স্ট্যাটাস',
+    'Completed / Discharged': 'সম্পন্ন / ছুটি দেওয়া',
+    'Referred to Specialist': 'বিশেষজ্ঞে রেফার',
+    'Follow-up Required': 'ফলো-আপ প্রয়োজন',
+    'Search by patient name, ID, or diagnosis...': 'রোগীর নাম, ID বা রোগ নির্ণয় দিয়ে খুঁজুন...',
+    PATIENT: 'রোগী',
+    'INITIAL TRIAGE': 'প্রাথমিক ট্রায়াজ',
+    'DIAGNOSIS SUMMARY': 'রোগ নির্ণয় সারাংশ',
+    'Update your professional information and consultation settings.':
+      'পেশাগত তথ্য ও পরামর্শ সেটিংস আপডেট করুন।',
+    'Doctor Name': 'ডাক্তারের নাম',
+    Specialization: 'বিশেষত্ব',
+    'Consultation Fee (BDT)': 'পরামর্শ ফি (টাকা)',
+    'Email Address': 'ইমেইল ঠিকানা',
+    'Hospital / Chamber Address': 'হাসপাতাল / চেম্বার ঠিকানা',
+    'BMDC Registration No.': 'BMDC রেজিস্ট্রেশন নং',
+    'Years of Experience': 'অভিজ্ঞতার বছর',
+    'Emergency Contact Name': 'জরুরি যোগাযোগের নাম',
+    'Emergency Contact Phone': 'জরুরি যোগাযোগের ফোন',
+    'Medical History Summary': 'চিকিৎসা ইতিহাস সারাংশ',
+    'Assigned by AI Triage Engine': 'AI ট্রায়াজ ইঞ্জিন দ্বারা নির্ধারিত',
+    '10 Minutes (Standard - 100 BDT)': '১০ মিনিট (১০০ টাকা)',
+    '20 Minutes (200 BDT)': '২০ মিনিট (২০০ টাকা)',
+    '30 Minutes (300 BDT)': '৩০ মিনিট (৩০০ টাকা)',
+    '45 Minutes (450 BDT)': '৪৫ মিনিট (৪৫০ টাকা)',
+    '60 Minutes (600 BDT)': '৬০ মিনিট (৬০০ টাকা)',
+    'Your consultation with': 'আপনার পরামর্শ',
+    'is scheduled for': 'নির্ধারিত সময়',
+    'Total Fee:': 'মোট ফি:',
+    'View Matched Doctors': 'মিলিত ডাক্তার দেখুন',
+    'Best Match': 'সেরা মিল',
+    'Active cases:': 'সক্রিয় কেস:',
+    ' fit': ' মিল',
+    doctor: 'ডাক্তার',
+    doctors: 'ডাক্তার',
+    'No triage submission found. Please submit your symptoms first.':
+      'কোনো ট্রায়াজ জমা নেই। আগে লক্ষণ জমা দিন।',
+    'Could not load matched doctors.': 'ডাক্তার তালিকা লোড হয়নি।',
+    'Redirecting to payment gateway...': 'পেমেন্ট গেটওয়েতে নিয়ে যাওয়া হচ্ছে...',
+    'Pay Now & Confirm Booking': 'এখনই পেমেন্ট ও বুকিং নিশ্চিত করুন',
+    'Sandbox mode': 'স্যান্ডবক্স মোড',
+    'test payments only': 'শুধু পরীক্ষামূলক পেমেন্ট',
+    Refund: 'রিফান্ড',
+    Submitting: 'জমা হচ্ছে',
+    'Submission failed. Please try again.': 'জমা ব্যর্থ। আবার চেষ্টা করুন।',
+    'Refund unavailable — payment not confirmed yet.': 'রিফান্ড unavailable — পেমেন্ট নিশ্চিত হয়নি।',
+    'Refund only available while waiting in queue (before doctor review).':
+      'শুধু লাইনে অপেক্ষার সময় রিফান্ড (ডাক্তার পর্যালোচনার আগে)।',
+    'Your case is being reviewed. Please wait for updates from your doctor.':
+      'আপনার কেস পর্যালোচনাধীন। ডাক্তারের আপডেটের জন্য অপেক্ষা করুন।',
+    'Please log in first.': 'আগে লগ ইন করুন।',
+    'No triage submission found. Please complete the symptom form first.':
+      'ট্রায়াজ জমা নেই। আগে লক্ষণ ফর্ম পূরণ করুন।',
+    'Server not responding. Please check backend status.':
+      'সার্ভার সাড়া দিচ্ছে না। ব্যাকএন্ড চেক করুন।',
+    'Redirecting to patient login…': 'রোগী লগ ইন-এ নিয়ে যাওয়া হচ্ছে…',
+    'Redirecting…': 'নিয়ে যাওয়া হচ্ছে…',
+    'Fixed Appointment Slot': 'নির্ধারিত অ্যাপয়েন্টমেন্ট স্লট',
+    '5 Days / Wk': '৫ দিন / সপ্তাহ',
+    '15 Mins / Patient': '১৫ মিনিট / রোগী',
+    '20 Patients': '২০ রোগী',
+    '15 Minutes / Patient': '১৫ মিনিট / রোগী',
+    'Configure availability, consultation slots, and automated booking limits.':
+      'উপলব্ধতা, স্লট ও স্বয়ংক্রিয় বুকিং সীমা সেট করুন।',
+    'Specialty:': 'বিশেষত্ব:',
+    'Cardiologist & Medical Officer': 'হৃদরোগ বিশেষজ্ঞ ও মেডিকেল অফিসার',
+    'Est. Wait:': 'আনু. অপেক্ষা:',
+    'Case #': 'কেস #',
+    Severity: 'গুরুত্ব',
+    'Non-urgent': 'জরুরি নয়',
+    'Non-Urgent': 'জরুরি নয়',
+    'Proceed to Payment Gateway': 'পেমেন্ট গেটওয়েতে যান',
+    '10 Mins': '১০ মিনিট',
+    Paid: 'পরিশোধিত',
+    Success: 'সফল',
+    Pending: 'অপেক্ষমাণ',
+    Failed: 'ব্যর্থ',
+    'Profile updated successfully!': 'প্রোফাইল সফলভাবে আপডেট!',
+    'Patient Profile updated successfully!': 'রোগী প্রোফাইল আপডেট হয়েছে!',
+    'Doctor Profile updated successfully!': 'ডাক্তার প্রোফাইল আপডেট হয়েছে!',
+    'Could not process cancellation.': 'বাতিল প্রক্রিয়া করা যায়নি।',
+    'Active Case': 'সক্রিয় কেস',
+    ' min consultation': ' মিনিট পরামর্শ',
+    Specialist: 'বিশেষজ্ঞ',
+    'Redirecting to': 'নিয়ে যাওয়া হচ্ছে',
+    'patient login': 'রোগী লগ ইন',
+    'Why are you cancelling? (Optional)': 'কেন বাতিল করছেন? (ঐচ্ছিক)',
+    'Full refund applies only while you are still in the queue.': 'পূর্ণ রিফান্ড শুধু লাইনে থাকা অবস্থায়।',
+    'Cancel consultation and request a full refund?': 'পরামর্শ বাতিল ও পূর্ণ রিফান্ড চান?',
+    'Submitting...': 'জমা হচ্ছে...',
+    'Referred to ER': 'জরুরি বিভাগে রেফার',
+    'Follow-up Set': 'ফলো-আপ নির্ধারিত',
+    ' Cases': ' কেস',
+    'Patient ID:': 'রোগী আইডি:',
+    DATE: 'তারিখ',
   };
 
   const T = {
@@ -421,7 +564,16 @@ const TeleTriageI18n = (() => {
         node = walker.nextNode();
         continue;
       }
-      if (!textOriginals.has(node)) textOriginals.set(node, node.textContent);
+      if (!textOriginals.has(node)) {
+        textOriginals.set(node, node.textContent);
+      } else {
+        const stored = textOriginals.get(node);
+        const live = node.textContent;
+        const translated = translatePhrase(stored);
+        if (live !== stored && live !== translated) {
+          textOriginals.set(node, live);
+        }
+      }
       const orig = textOriginals.get(node);
       node.textContent = current === 'bn' ? translatePhrase(orig) : orig;
       node = walker.nextNode();
@@ -451,6 +603,15 @@ const TeleTriageI18n = (() => {
 
     const titleEl = document.querySelector('[data-i18n-title]');
     if (titleEl) document.title = t(titleEl.getAttribute('data-i18n-title'));
+  }
+
+  function tr(text) {
+    if (current === 'en' || text == null) return text;
+    return PHRASES[text] || translatePhrase(String(text));
+  }
+
+  function reapply() {
+    if (current === 'bn') autoTranslateDom();
   }
 
   function apply(lang) {
@@ -485,7 +646,7 @@ const TeleTriageI18n = (() => {
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   }
 
-  return { init, toggle, apply, t, getLang: () => current };
+  return { init, toggle, apply, t, tr, reapply, getLang: () => current };
 })();
 
 document.addEventListener('DOMContentLoaded', () => TeleTriageI18n.init());

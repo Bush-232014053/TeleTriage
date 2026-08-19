@@ -1,5 +1,7 @@
 // Priority queue page — live queue with search/filter + Socket.IO updates.
 
+const tr = (s) => (window.TeleTriageI18n ? TeleTriageI18n.tr(s) : s);
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (!TeleTriageAPI.getToken()) {
     window.location.href = 'doctor-login.html';
@@ -40,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (err) {
     console.error('Priority queue load failed:', err);
     if (queueBody) {
-      queueBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">${err.message || 'Failed to load queue.'}</td></tr>`;
+      queueBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">${err.message || tr('Failed to load queue.')}</td></tr>`;
     }
     if (err.status === 401 || err.status === 403) {
       window.location.href = 'doctor-login.html';
@@ -54,10 +56,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function updateStatCards(stats) {
     if (statCards.length < 4 || !stats) return;
-    statCards[0].textContent = `${stats.criticalCount ?? 0} Patient${stats.criticalCount === 1 ? '' : 's'}`;
-    statCards[1].textContent = `${stats.urgentCount ?? 0} Patient${stats.urgentCount === 1 ? '' : 's'}`;
-    statCards[2].textContent = `${stats.moderateOrLowCount ?? 0} Patient${stats.moderateOrLowCount === 1 ? '' : 's'}`;
-    statCards[3].textContent = `${stats.activeCount ?? 0} In Line`;
+    statCards[0].textContent = `${stats.criticalCount ?? 0} ${tr(stats.criticalCount === 1 ? 'Patient' : 'Patients')}`;
+    statCards[1].textContent = `${stats.urgentCount ?? 0} ${tr(stats.urgentCount === 1 ? 'Patient' : 'Patients')}`;
+    statCards[2].textContent = `${stats.moderateOrLowCount ?? 0} ${tr(stats.moderateOrLowCount === 1 ? 'Patient' : 'Patients')}`;
+    statCards[3].textContent = `${stats.activeCount ?? 0} ${tr('In Line')}`;
   }
 
   function computeStatsFromQueue(queue) {
@@ -76,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!queueBody) return;
 
     if (queue.length === 0) {
-      queueBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Queue is empty.</td></tr>';
+      queueBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">${tr('Queue is empty.')}</td></tr>`;
       return;
     }
 
@@ -92,13 +94,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         <td>
           <span class="d-inline-flex align-items-center gap-2">
             <span class="sev-badge sev-${entry.severityScore}">${entry.severityScore}</span>
-            <span class="fw-bold">${entry.urgencyLabel}</span>
+            <span class="fw-bold">${tr(entry.urgencyLabel)}</span>
           </span>
         </td>
-        <td><span class="badge px-3 py-2 rounded-pill fw-medium status-badge">${entry.status}</span></td>
+        <td><span class="badge px-3 py-2 rounded-pill fw-medium status-badge">${tr(entry.status)}</span></td>
         <td class="text-end pe-4">
           <button class="btn btn-sm btn-outline-secondary rounded-3 px-3" data-queue-id="${entry.queueId}" data-action="review">
-            <i class="bi bi-file-earmark-medical me-1"></i> Start Review
+            <i class="bi bi-file-earmark-medical me-1"></i> ${tr('Start Review')}
           </button>
         </td>
       </tr>`).join('');
@@ -112,10 +114,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             method: 'PATCH',
             body: JSON.stringify({ status: 'Under Review' }),
           });
-          btn.textContent = 'Under Review';
+          btn.textContent = tr('Under Review');
         } catch (e) {
           btn.disabled = false;
-          alert(e.message || 'Could not update case status.');
+          alert(e.message || tr('Could not update case status.'));
         }
       });
     });

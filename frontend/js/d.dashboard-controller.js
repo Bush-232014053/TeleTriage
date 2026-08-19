@@ -1,5 +1,7 @@
 // Doctor dashboard — live stats and queue preview from API + Socket.IO.
 
+const tr = (s) => (window.TeleTriageI18n ? TeleTriageI18n.tr(s) : s);
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (!TeleTriageAPI.getToken()) {
     window.location.href = 'doctor-login.html';
@@ -22,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ]);
 
     const name = profile.full_name || 'Doctor';
-    if (welcomeEl) welcomeEl.textContent = `Welcome, ${name}`;
+    if (welcomeEl) welcomeEl.textContent = `${tr('Welcome,')} ${name}`;
     if (sidebarName) sidebarName.textContent = name;
     if (sidebarSpec) sidebarSpec.textContent = profile.specialty || '';
 
@@ -57,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const preview = queue.slice(0, 5);
     if (preview.length === 0) {
-      queueBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No patients in queue right now.</td></tr>';
+      queueBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">${tr('No patients in queue right now.')}</td></tr>`;
       return;
     }
 
@@ -65,9 +67,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       <tr>
         <td>${entry.patientDisplayId}</td>
         <td>${severityBadge(entry.severityScore, entry.urgencyLabel)}</td>
-        <td>${entry.estimatedWaitMins} mins</td>
-        <td><span class="text-emerald-600"><i class="bi bi-check-circle-fill me-1"></i>${entry.paymentStatus || 'Paid'}</span></td>
-        <td class="text-end"><a href="priority-queue.html" class="btn btn-sm text-white px-3 rounded-2" style="background-color:#187D85;">View</a></td>
+        <td>${entry.estimatedWaitMins} ${tr('mins')}</td>
+        <td><span class="text-emerald-600"><i class="bi bi-check-circle-fill me-1"></i>${tr(entry.paymentStatus || 'Paid')}</span></td>
+        <td class="text-end"><a href="priority-queue.html" class="btn btn-sm text-white px-3 rounded-2" style="background-color:#187D85;">${tr('View')}</a></td>
       </tr>`).join('');
   }
 });
@@ -77,5 +79,6 @@ function severityBadge(score, label) {
   if (score <= 1) cls = 'bg-danger-subtle text-danger';
   else if (score === 2) cls = 'bg-warning-subtle text-warning-emphasis';
   else if (score >= 4) cls = 'bg-success-subtle text-success';
-  return `<span class="badge ${cls} px-2.5 py-1 rounded-pill">${label || score}</span>`;
+  const tr = (s) => (window.TeleTriageI18n ? TeleTriageI18n.tr(s) : s);
+  return `<span class="badge ${cls} px-2.5 py-1 rounded-pill">${tr(label || String(score))}</span>`;
 }

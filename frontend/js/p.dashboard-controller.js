@@ -1,5 +1,7 @@
 // Patient dashboard — live status, duration, cancel + refund
 
+const tr = (s) => (window.TeleTriageI18n ? TeleTriageI18n.tr(s) : s);
+
 document.addEventListener('DOMContentLoaded', async () => {
   const token = TeleTriageAPI.getToken();
   if (!token) {
@@ -20,16 +22,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!status.hasActiveCase) return;
 
-    updateText('dashCaseId', status.caseId ? `Case #Q-${status.caseId}` : 'Active Case');
+    updateText('dashCaseId', status.caseId ? `${tr('Case #')}Q-${status.caseId}` : tr('Active Case'));
     updateText('dashTriageLabel', status.urgencyLabel || '—');
-    updateText('dashSpecialty', `Specialty: ${status.specialty || '—'}`);
-    updateText('dashQueueText', status.status || '—');
+    updateText('dashSpecialty', `${tr('Specialty:')} ${status.specialty || '—'}`);
+    updateText('dashQueueText', status.status ? tr(status.status) : '—');
     updateText('dashEstWait', status.estimatedWaitMins != null
-      ? `Est. Wait: ${status.estimatedWaitMins} mins`
+      ? `${tr('Est. Wait:')} ${status.estimatedWaitMins} ${tr('mins')}`
       : '');
 
     if (status.durationMinutes) {
-      updateText('dashConsultDuration', `${status.durationMinutes} min consultation`);
+      updateText('dashConsultDuration', `${status.durationMinutes}${tr(' min consultation')}`);
     }
 
     if (status.paymentAmount != null) {
@@ -37,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (payEl) payEl.textContent = `BDT ${status.paymentAmount}`;
       const badge = document.getElementById('dashPaymentBadge');
       if (badge) {
-        badge.innerHTML = `<i class="bi bi-shield-check me-1"></i> ${status.paymentStatus} (${status.paymentMethod || 'Paid'})`;
+        badge.innerHTML = `<i class="bi bi-shield-check me-1"></i> ${tr(status.paymentStatus)} (${tr(status.paymentMethod || 'Paid')})`;
       }
     }
 
@@ -47,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (status.assignedDoctor) {
       updateText('assignedDocName', status.assignedDoctor.name);
-      updateText('assignedDocSpec', `${status.assignedDoctor.specialty} Specialist`);
+      updateText('assignedDocSpec', `${status.assignedDoctor.specialty} ${tr('Specialist')}`);
     }
 
     updateStepper(status.status);
@@ -59,15 +61,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       cancelBtn.addEventListener('click', handleCancel);
     } else if (cancelHint) {
       cancelHint.textContent = status.status === 'Queued'
-        ? 'Refund unavailable — payment not confirmed yet.'
-        : 'Refund only available while waiting in queue (before doctor review).';
+        ? tr('Refund unavailable — payment not confirmed yet.')
+        : tr('Refund only available while waiting in queue (before doctor review).');
     }
   } catch (err) {
     console.warn('Could not load patient status:', err.message);
   }
 
   document.getElementById('enterRoomBtn')?.addEventListener('click', () => {
-    alert('Your case is being reviewed. Please wait for updates from your doctor.');
+    alert(tr('Your case is being reviewed. Please wait for updates from your doctor.'));
   });
 });
 
@@ -97,20 +99,20 @@ function updateStepper(status) {
 
 async function handleCancel() {
   const reason = prompt(
-    'Why are you cancelling? (Optional)\n\nFull refund applies only while you are still in the queue.'
+    `${tr('Why are you cancelling? (Optional)')}\n\n${tr('Full refund applies only while you are still in the queue.')}`
   );
   if (reason === null) return;
 
-  if (!confirm('Cancel consultation and request a full refund?')) return;
+  if (!confirm(tr('Cancel consultation and request a full refund?'))) return;
 
   try {
     const result = await TeleTriageAPI.request('/api/patients/me/cancel-consultation', {
       method: 'POST',
       body: JSON.stringify({ reason: reason || undefined }),
     });
-    alert(`${result.message}\nRefund: BDT ${result.refundAmount}\nTransaction: ${result.refundTransactionId}`);
+    alert(`${result.message}\n${tr('Refund')}: BDT ${result.refundAmount}\nTransaction: ${result.refundTransactionId}`);
     window.location.href = 'patient-dashboard.html';
   } catch (err) {
-    alert(err.message || 'Could not process cancellation.');
+    alert(err.message || tr('Could not process cancellation.'));
   }
 }

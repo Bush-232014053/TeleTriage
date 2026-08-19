@@ -1,5 +1,7 @@
 // Profile Controller for TeleTriage
 
+const tr = (s) => (window.TeleTriageI18n ? TeleTriageI18n.tr(s) : s);
+
 document.addEventListener("DOMContentLoaded", () => {
   // 1. Patient Profile Form Logic
   const patientForm = document.getElementById("patientProfileForm");
@@ -17,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // LocalStorage-এ ডাটা সেভ করা
       localStorage.setItem("patientName", updatedName);
       
-      alert("✅ Patient Profile updated successfully!");
+      alert(`✅ ${tr('Patient Profile updated successfully!')}`);
       window.location.href = "patient-dashboard.html"; // ড্যাশবোর্ডে ফেরত যাবে
     });
   }
@@ -27,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (doctorForm) {
     doctorForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("✅ Doctor Profile updated successfully!");
+      alert(`✅ ${tr('Doctor Profile updated successfully!')}`);
       window.location.href = "doctor-dashboard.html"; // ড্যাশবোর্ডে ফেরত যাবে
     });
   }
