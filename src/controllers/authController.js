@@ -130,9 +130,43 @@ async function loginAdmin(req, res) {
 // POST /api/auth/logout (FR-06)
 // JWTs are stateless, so "logout" is really just the client discarding the
 // token. This endpoint exists for API-contract completeness and so a
-// server-side denylist can be added later without changing the frontend.
+// server-side denylist can be added later without changing the client.
 async function logout(req, res) {
   res.json({ message: 'Logged out. Please discard your token on the client.' });
 }
 
-module.exports = { registerPatient, loginPatient, loginDoctor, loginAdmin, logout };
+// POST /api/auth/reset-password/patient — verify email + phone, set new password (demo-friendly, no email server)
+async function resetPatientPassword(req, res) {
+  const { email, phone, password, confirmPassword } = req.body;
+
+  if (!email || !phone || !password) {
+    return res.status(400).json({ error: 'email, phone and new password are required.' });
+  }
+  if (!EMAIL_REGEX.test(email)) {
+    return res.status(400).json({ error: 'Please provide a valid email address.' });
+  }
+  if (!PHONE_REGEX.test(phone)) {
+    return res.status(400).json({ error: 'Please provide a valid Bangladeshi phone number.' });
+  }
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'Password must be at least 8 characters.' });
+  }
+  if (confirmPassword != null && password !== confirmPassword) {
+    return res.status(400).json({ error: 'Passwords do not match.' });
+  }
+
+  const { rows } = await pool.query(
+    'SELECT patient_id FROM patients WHERE email = $1 AND phone = $2 AND is_active = TRUE',
+    [email.trim(), phone.trim()]
+  );
+  if (rows.length === 0) {
+    return res.status(404).json({ error: 'No active account found with this email and phone number.' });
+  }
+
+  const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+  await pool.query('UPDATE patients SET password_hash = $1 WHERE patient_id = $2', [passwordHash, rows[0].patient_id]);
+
+  res.json({ message: 'Password updated successfully. You can log in with your new password.' });
+}
+
+module.exports = { registerPatient, loginPatient, loginDoctor, loginAdmin, logout, resetPatientPassword };
