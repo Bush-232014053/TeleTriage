@@ -148,17 +148,36 @@ body, html {
   object-position: bottom right;
 }
 
-/* 14\" laptops & tablet — hide side art, tighten layout */
-@media (max-width: 1399.98px) {
+/* Phone / small tablet — hide side art */
+@media (max-width: 991.98px) {
   .hero-img-left,
   .hero-img-right {
     display: none !important;
   }
+}
+
+/* 14\" laptops — keep side heroes, scale down so center content stays clear */
+@media (min-width: 992px) and (max-width: 1399.98px) {
+  .hero-img-left {
+    width: 15vw !important;
+    max-width: 195px !important;
+  }
+
+  .hero-img-right {
+    width: 13vw !important;
+    max-width: 175px !important;
+  }
 
   .hero-main {
-    max-width: 900px;
+    max-width: 640px;
     margin-left: auto;
     margin-right: auto;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .hero-container p.lead {
+    max-width: 88% !important;
   }
 }
 
@@ -201,6 +220,15 @@ body, html {
 @media (max-height: 820px) {
   .hero-container {
     min-height: auto;
+  }
+
+  @media (min-width: 992px) {
+    .hero-img-left,
+    .hero-img-right {
+      max-height: 38vh !important;
+      width: auto !important;
+      max-width: 150px !important;
+    }
   }
 
   .top-strip {
